@@ -64,3 +64,27 @@ public class Solution {
         return retNode;
     }
 }
+
+// dfs
+public class Solution {
+    private Map<Integer, UndirectedGraphNode> map = new HashMap<>();
+    
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        if (node == null) {
+            return null;
+        }
+        return dfs(node);
+    }
+    
+    public UndirectedGraphNode dfs(UndirectedGraphNode node) {
+        if (map.containsKey(node.label)) {
+            return map.get(node.label);
+        }
+        UndirectedGraphNode curNode = new UndirectedGraphNode(node.label);
+        map.put(curNode.label, curNode);
+        for (UndirectedGraphNode neighbor: node.neighbors) {
+            curNode.neighbors.add(dfs(neighbor));
+        }
+        return curNode;
+    }   
+}
