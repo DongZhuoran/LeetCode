@@ -1,0 +1,77 @@
+/**
+ * Given a matrix of M x N elements (M rows, N columns), return all elements 
+ * of the matrix in diagonal order as shown in the below image.
+ *
+ * Example:
+ * Input:
+ * [
+ *  [ 1, 2, 3 ],
+ *  [ 4, 5, 6 ],
+ *  [ 7, 8, 9 ]
+ * ]
+ * Output:  [1,2,4,7,5,3,6,8,9]
+ * Explanation:
+ * (see https://leetcode.com/explore/learn/card/array-and-string/202/introduction-to-2d-array/1167/)
+ * Note:
+ * The total number of elements of the given matrix will not exceed 10,000.
+ */
+ 
+ class Solution {
+    public int[] findDiagonalOrder(int[][] matrix) {
+        if (matrix.length == 0) return new int[] {};
+        int[] ret = new int[matrix.length * matrix[0].length];
+        int i = 0;
+        int j = 0;
+        int dir = -1;
+        for (int k = 0; k < ret.length; ++k) {
+            ret[k] = matrix[i][j];
+            if (dir == -1) {
+                if (i > 0 && j < matrix[0].length - 1) {
+                    i--;
+                    j++;
+                } else {
+                    if (j < matrix[0].length - 1) {
+                        j++;
+                    } else {
+                        i++;
+                    }
+                    dir = 1;
+                }
+            } else if (dir == 1) {
+                if (i < matrix.length - 1 && j > 0) {
+                    i++;
+                    j--;
+                } else {
+                    if (i < matrix.length - 1) {
+                        i++;
+                    } else {
+                        j++;
+                    }
+                    dir = -1;
+                }
+            }
+        }
+        return ret;
+    }
+}
+
+// A concise one
+class Solution {
+    public int[] findDiagonalOrder(int[][] matrix) {
+        if (matrix.length == 0) return new int[0];
+        int r = 0, c = 0, m = matrix.length, n = matrix[0].length, arr[] = new int[m * n];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = matrix[r][c];
+            if ((r + c) % 2 == 0) { // moving up
+                if      (c == n - 1) { r++; }
+                else if (r == 0)     { c++; }
+                else            { r--; c++; }
+            } else {                // moving down
+                if      (r == m - 1) { c++; }
+                else if (c == 0)     { r++; }
+                else            { r++; c--; }
+            }   
+        }   
+        return arr;
+    }
+}
