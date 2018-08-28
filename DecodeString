@@ -61,6 +61,41 @@
     }
 }
 
+// Use one stack
+class Solution {  
+    public String decodeString(String s) {
+        String decoded = "";
+        Stack<String> stack = new Stack<>();
+        int index = 0;
+        while (index < s.length()) {
+            if (s.charAt(index) == ']') {
+                String str = "";
+                String countStr = "";
+                String concate = "";
+                while (!stack.peek().equals("[")) {
+                    str = stack.pop() + str;
+                }
+                stack.pop();
+                while (!stack.empty() && Character.isDigit(stack.peek().charAt(0))) {
+                    countStr = stack.pop() + countStr;
+                }
+                int count = Integer.valueOf(countStr);
+                for (int i = 0; i < count; ++i) {
+                    concate += str;
+                }
+                stack.push(concate);
+            } else {
+                stack.push(String.valueOf(s.charAt(index)));
+            }
+            index++;
+        }
+        while (!stack.empty()) {
+            decoded = stack.pop() + decoded;
+        }
+        return decoded;
+    }
+}
+
 // Faster solution
 class Solution {  
     public String decodeString(String s) {
