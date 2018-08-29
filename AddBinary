@@ -1,0 +1,66 @@
+/**
+ * Given two binary strings, return their sum (also a binary string).
+ *
+ * The input strings are both non-empty and contains only characters 1 or 0.
+ *
+ * Example 1:
+ * Input: a = "11", b = "1"
+ * Output: "100"
+ *
+ * Example 2:
+ * Input: a = "1010", b = "1011"
+ * Output: "10101"
+ */
+ 
+class Solution {
+    public String addBinary(String a, String b) {
+        char[] longStr = b.toCharArray();
+        char[] shortStr = a.toCharArray();
+        if (a.length() > b.length()) {
+            longStr = a.toCharArray();
+            shortStr = b.toCharArray();
+        }
+        StringBuilder sum = new StringBuilder();
+        int carry = 0;
+        for (int i = longStr.length - 1, j = shortStr.length - 1; i >= 0; --i, --j) {
+            if (j >= 0) {
+                if (longStr[i] - '0' + shortStr[j] - '0' + carry >= 2) {
+                    sum.append((longStr[i] - '0' + shortStr[j] - '0' + carry) % 2);
+                    carry = 1;
+                } else {
+                    sum.append(longStr[i] - '0' + shortStr[j] - '0' + carry);
+                    carry = 0;
+                }
+            } else {
+                if (longStr[i] - '0' + carry >= 2) {
+                    sum.append((longStr[i] - '0' + carry) % 2);
+                    carry = 1;
+                } else {
+                    sum.append(longStr[i] - '0' + carry);
+                    carry = 0;
+                }
+            }
+        }
+        if (carry == 1) {
+            sum.append("1");
+        }
+        return sum.reverse().toString();
+    }
+}
+
+// A concise one
+public class Solution {
+    public String addBinary(String a, String b) {
+        StringBuilder sb = new StringBuilder();
+        int i = a.length() - 1, j = b.length() -1, carry = 0;
+        while (i >= 0 || j >= 0) {
+            int sum = carry;
+            if (j >= 0) sum += b.charAt(j--) - '0';
+            if (i >= 0) sum += a.charAt(i--) - '0';
+            sb.append(sum % 2);
+            carry = sum / 2;
+        }
+        if (carry != 0) sb.append(carry);
+        return sb.reverse().toString();
+    }
+}
