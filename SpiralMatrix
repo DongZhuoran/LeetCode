@@ -1,0 +1,74 @@
+/**
+ * Given a matrix of m x n elements (m rows, n columns), return all elements 
+ * of the matrix in spiral order.
+ *
+ * Example 1:
+ * Input:
+ * [
+ *  [ 1, 2, 3 ],
+ *  [ 4, 5, 6 ],
+ *  [ 7, 8, 9 ]
+ * ]
+ * Output: [1,2,3,6,9,8,7,4,5]
+ *
+ * Example 2:
+ * Input:
+ * [
+ *  [1, 2, 3, 4],
+ *  [5, 6, 7, 8],
+ *  [9,10,11,12]
+ * ]
+ * Output: [1,2,3,4,8,12,11,10,9,5,6,7]
+ */
+
+
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        if (matrix.length == 0) return new ArrayList<>();
+        List<Integer> ret = new ArrayList<>();
+        int i = 0, j = 0, dir = 0;
+        int top = -1, bottom = matrix.length, left = -1, right = matrix[0].length; // bound
+        for (int k = 0; k < matrix.length * matrix[0].length; ++k) {
+            ret.add(matrix[i][j]);
+            switch (dir) {
+                case 0: // go right
+                    if (j < right - 1) {
+                        j++;
+                    } else if (i < bottom - 1) {
+                        top = i;
+                        i++;
+                        dir = 1;
+                    }
+                    break;
+                case 1: // go down
+                    if (i < bottom - 1) {
+                        i++;
+                    } else if (j > left + 1) {
+                        right = j;
+                        j--;
+                        dir = 2;
+                    }
+                    break;
+                case 2: // go left
+                    if (j > left + 1) {
+                        j--;
+                    } else if (i > top + 1) {
+                        bottom = i;
+                        i--;
+                        dir = 3;
+                    }
+                    break;
+                case 3: // go up
+                    if (i > top + 1) {
+                        i--;
+                    } else if (j < right - 1) {
+                        left = j;
+                        j++;
+                        dir = 0;
+                    }
+                    break;
+            }
+        }
+        return ret;
+    }
+}
