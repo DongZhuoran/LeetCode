@@ -16,6 +16,30 @@
  */
  
  /**
+  * Time complexity: O(n)
+  */
+ class Solution {
+    public int[] twoSum(int[] num, int target) {
+        int[] indice = new int[2];
+        if (num == null || num.length < 2) return indice;
+        int left = 0, right = num.length - 1;
+        while (left < right) {
+            int temp = num[left] + num[right];
+            if (temp == target) {
+                indice[0] = left + 1;
+                indice[1] = right + 1;
+                break;
+            } else if (temp > target) {
+                right --;
+            } else {
+                left ++;
+            }
+        }
+        return indice;
+    }
+}
+ 
+ /**
   * Time complexity: O(n^2). We can use binary search to decrease time cost to O(nlogn).
   */
  class Solution {
