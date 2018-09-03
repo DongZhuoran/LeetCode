@@ -1,0 +1,43 @@
+/**
+ * Write a function that takes a string as input and returns the string reversed.
+ *
+ * Example 1:
+ * Input: "hello"
+ * Output: "olleh"
+ *
+ * Example 2:
+ * Input: "A man, a plan, a canal: Panama"
+ * Output: "amanaP :lanac a ,nalp a ,nam A"
+ */
+ 
+ class Solution {
+    public String reverseString(String s) {
+        if (s == null || s.length() == 0)
+            return s;
+        char[] temp = s.toCharArray();
+        int i = 0, j = s.length() - 1;
+        while (i < j) {
+            swap(temp, i, j);
+            i++;
+            j--;
+        }
+        return new String(temp);
+    }
+    
+    public void swap(char[] s, int i, int j) {
+        char temp = s[i];
+        s[i] = s[j];
+        s[j] = temp;
+    }
+}
+
+// A much more concise solution
+class Solution {
+    public String reverseString(String s) {
+        char[] ret = new char[s.length()];
+        for (int i = 0; i < s.length(); ++i) {
+            ret[i] = s.charAt(s.length() - 1 - i);
+        }
+        return new String(ret);
+    }
+}
