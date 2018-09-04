@@ -32,3 +32,17 @@ class Solution {
         return new String(ret);
     }
 }
+
+// A more concise solution
+class Solution {
+    public String reverseWords(String s) {
+        String[] splitList = s.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < splitList.length; i++) {
+            sb.setLength(0);
+            sb.append(splitList[i]);
+            splitList[i] = sb.reverse().toString();
+        }
+        return String.join(" ", splitList);
+    }
+}
