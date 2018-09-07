@@ -36,3 +36,14 @@
         return (int) (left + right) / 2;
     }
 }
+
+// Newton, refer to:
+// https://leetcode.com/explore/learn/card/binary-search/125/template-i/950/discuss/25057/3-4-short-lines-Integer-Newton-Every-Language
+class Solution {
+    public int mySqrt(int x) {
+        long r = x;
+        while (r*r > x)
+            r = (r + x/r) / 2;
+        return (int) r;
+    }
+}
