@@ -35,3 +35,25 @@ class Solution {
         return unhold[prices.length - 1];
     }
 }
+
+
+// recursive solution. Time exceeded.
+class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length < 2) {
+            return 0;
+        }
+        return calculate(prices, 0, 0);
+    }
+    
+    public int calculate(int[] prices, int n, int flag) {
+        if (n >= prices.length) {
+            return 0;
+        }
+        if (flag == 0) {
+            return Math.max(calculate(prices, n + 1, 1) - prices[n], calculate(prices, n + 1, 0));
+        } else {
+            return Math.max(calculate(prices, n + 2, 0) + prices[n], calculate(prices, n + 1, 1));
+        }
+    }
+}
