@@ -1,0 +1,93 @@
+/**
+ * Given a sorted array, two integers k and x, find the k closest elements to x in the 
+ * array. The result should also be sorted in ascending order. If there is a tie, the 
+ * smaller elements are always preferred.
+ *
+ * Example 1:
+ * Input: [1,2,3,4,5], k=4, x=3
+ * Output: [1,2,3,4]
+ *
+ * Example 2:
+ * Input: [1,2,3,4,5], k=4, x=-1
+ * Output: [1,2,3,4]
+ * 
+ * Note:
+ * 1. The value k is positive and will always be smaller than the length of the sorted array.
+ * 2. Length of the given array is positive and will not exceed 104
+ * 3. Absolute value of elements in the array and x will not exceed 104
+ */
+
+// Time complexity: O(log n). Reference:
+// https://leetcode.com/explore/learn/card/binary-search/135/template-iii/945/discuss/106419/O(log-n)-Java-1-line-O(log(n)-+-k)-Ruby
+class Solution {
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        List<Integer> ret = new ArrayList<>();
+        if (arr == null || arr.length == 0) {
+            return ret;
+        }
+        
+        int lo = 0, hi = arr.length - k;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (x - arr[mid] > arr[mid + k] - x) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        for (int i = 0; i < k; ++i) {
+            ret.add(arr[lo + i]);
+        }
+        return ret;
+    }
+}
+
+// Time exceeded
+class Solution {    
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        List<Integer> ret = new ArrayList<>();
+        if (arr == null || arr.length == 0) {
+            return ret;
+        }
+        
+        int pos = -1;
+        int left = 0, right = arr.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == x) {
+                pos = mid;
+                break;
+            } else if (arr[mid] < x) {
+                left = mid;
+            } else {
+                right = mid - 1;
+            }
+        }
+        int pl, pr;
+        if (pos == -1 && left > 0) {
+            pl = left;
+        } else if (pos != -1) {
+            pl = pos;
+        } else {
+            pl = 0;
+        }
+        pr = pl + 1;
+        for (int i = 0; i < k; ++i) {
+            if (pl >= 0 && pr < arr.length && Math.abs(arr[pl] - x) <= Math.abs(arr[pr] - x)) {
+                ret.add(arr[pl]);
+                pl--;
+            } else if (pl >= 0 && pr < arr.length) {
+                ret.add(arr[pr]);
+                pr++;
+            } else if (pl >= 0) {
+                ret.add(arr[pl]);
+                pl--;
+            } else {
+                ret.add(arr[pr]);
+                pr++;
+            }
+        }
+        Collections.sort(ret);
+        return ret;
+    }
+}
