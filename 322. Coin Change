@@ -1,0 +1,60 @@
+/**
+ * You are given coins of different denominations and a total amount of money amount. 
+ * Write a function to compute the fewest number of coins that you need to make up that
+ * amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+ *
+ * Example 1:
+ * Input: coins = [1, 2, 5], amount = 11
+ * Output: 3 
+ * Explanation: 11 = 5 + 5 + 1
+ * 
+ * Example 2:
+ * Input: coins = [2], amount = 3
+ * Output: -1
+ * 
+ * Note:
+ * - You may assume that you have an infinite number of each kind of coin.
+ */
+
+// Recursive solution. It can be changed to a dp solution.
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        if (amount == 0) {
+            return 0;
+        } else if (coins == null || coins.length == 0) {
+            return -1;
+        }
+        
+        Map<Integer, Integer> map = new HashMap<>();
+        // It can be optimized by find the min val in coins by O(log n) time.
+        Arrays.sort(coins);
+        return dfs(coins, amount, map);
+    }
+    
+    public int dfs(int[] coins, int amount, Map<Integer, Integer> map) {
+        if (amount == 0) {
+            return 0;
+        } else if (amount < coins[0]) {
+            return -1;
+        }
+        
+        if (map.containsKey(amount)) {
+            return map.get(amount);
+        }
+        
+        int minCount = Integer.MAX_VALUE;
+        for (int i = 0; i < coins.length; ++i) {
+            int temp = dfs(coins, amount - coins[i], map);
+            if (temp != -1) {
+                minCount = Math.min(minCount, temp + 1);
+            }
+        }
+        if (minCount == Integer.MAX_VALUE) {
+            map.put(amount, -1);
+            return -1;
+        } else {
+            map.put(amount, minCount);
+            return minCount;
+        }
+    }
+}
