@@ -26,15 +26,13 @@ class Solution {
         }
         
         Map<Integer, Integer> map = new HashMap<>();
-        // It can be optimized by find the min val in coins by O(log n) time.
-        Arrays.sort(coins);
         return dfs(coins, amount, map);
     }
     
     public int dfs(int[] coins, int amount, Map<Integer, Integer> map) {
         if (amount == 0) {
             return 0;
-        } else if (amount < coins[0]) {
+        } else if (amount < 0) {
             return -1;
         }
         
