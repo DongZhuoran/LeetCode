@@ -22,16 +22,17 @@
 // AC iterative solution. Time complexity: O(log n).
 class solution {
     public double myPow(double x, int n) {
+        long N = n;
         double ret = 1;
         if (n < 0) {
             x = 1 / x;
-            n = -n;
+            N = -n;
         }
-        while (n != 0) {
-            if (n % 2 != 0) {
+        while (N != 0) {
+            if (N % 2 != 0) {
                 ret *= x;
             }
-            n = n / 2;
+            N = N / 2;
             x *= x;
         }
         return ret;
