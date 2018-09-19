@@ -1,0 +1,91 @@
+/**
+ * Given two arrays, write a function to compute their intersection.
+ *
+ * Example 1:
+ * Input: nums1 = [1,2,2,1], nums2 = [2,2]
+ * Output: [2]
+ *
+ * Example 2:
+ * Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+ * Output: [9,4]
+ *
+ * Note:
+ * - Each element in the result must be unique.
+ * - The result can be in any order.
+ */
+
+// Time complexity: O(m + n) 
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+     	int l1 = nums1.length;
+		int l2 = nums2.length;
+		if (l1 == 0 || l2 == 0 || nums1 == null || nums2 == null) {
+			return new int[0];
+		}
+		int maxValue = Integer.MIN_VALUE;
+		int minValue = Integer.MAX_VALUE;
+
+		for (int i : nums1) {
+			if (i < minValue) {
+				minValue = i;
+			}
+			if (i > maxValue) {
+				maxValue = i;
+			}
+		}
+
+		boolean[] track = new boolean[maxValue - minValue + 1];
+		for (int i : nums1) {
+			track[i - minValue] = true;
+		}
+		int idx = 0;
+		for (int i : nums2) {
+			if (i >= minValue && i <= maxValue && track[i - minValue]) {
+				track[i - minValue] = false;
+				nums1[idx] = i;
+				idx++;
+			}
+		}
+		return Arrays.copyOf(nums1, idx);
+
+        
+    }
+}
+
+// Time complexity: O(nlog n)
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        if (nums1 == null || nums2 == null) {
+            return new int[0];
+        }
+        List<Integer> list = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
+        Arrays.sort(nums1);
+        for (int i = 0; i < nums2.length; ++i) {
+            if (!set.contains(nums2[i])) {
+                set.add(nums2[i]);
+                findIntersection(nums1, nums2[i], list);
+            }
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < res.length; ++i) {
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+    
+    public void findIntersection(int[] nums1, int target, List<Integer> res) {
+        int left = 0, right = nums1.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums1[mid] == target) {
+                res.add(target);
+                return;
+            } else if (nums1[mid] > target) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+    }
+}
