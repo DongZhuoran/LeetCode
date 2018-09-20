@@ -12,6 +12,9 @@
  * Note:
  *   1 <= A.length <= 30000
  *   1 <= A[i] <= 30000
+ *
+ * Official solution see:
+ * https://leetcode.com/problems/sum-of-subarray-minimums/solution/
  */
  
 // Brute force. time limit exceeded.
@@ -27,6 +30,35 @@ class Solution {
                     sum = (int) (sum % (1e9 + 7));
                 }
             }
+        }
+        return sum;
+    }
+}
+
+// DP solution with monotonic stack. Time complexity: O(n).
+// Refer to: https://www.jianshu.com/p/120ce297b6e7
+class Solution {
+    public int sumSubarrayMins(int[] A) {
+        int len = A.length;
+        if (len == 0) {
+            return 0;
+        }
+        int sum = A[0];
+        int mod = 1000000007;
+        Stack<int[]> stack = new Stack<>();
+        stack.push(new int[]{A[0], 0, A[0]});
+        for (int i = 1; i < len; ++i) {
+            if (A[i] >= stack.peek()[0]) {
+                stack.push(new int[]{A[i], i, (A[i] + stack.peek()[2]) % mod});
+            } else {
+                while (!stack.isEmpty() && A[i] < stack.peek()[0]) {
+                    stack.pop();
+                }
+                int idx = stack.isEmpty() ? -1 : stack.peek()[1];
+                int val = stack.isEmpty() ? 0 : stack.peek()[2];
+                stack.push(new int[]{A[i], i, ((i - idx) * A[i] + val) % mod});
+            }
+            sum = (sum + stack.peek()[2]) % mod;
         }
         return sum;
     }
