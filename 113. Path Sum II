@@ -1,0 +1,59 @@
+/**
+ * Given a binary tree and a sum, find all root-to-leaf paths where each path's sum 
+ * equals the given sum.
+ *
+ * Note: A leaf is a node with no children.
+ * 
+ * Example:
+ * Given the below binary tree and sum = 22,
+ *
+ *       5
+ *      / \
+ *     4   8
+ *    /   / \
+ *   11  13  4
+ *  /  \    / \
+ * 7    2  5   1
+ * Return:
+ * 
+ * [
+ *    [5,4,11,2],
+ *    [5,8,4,5]
+ * ]
+ */
+ 
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> paths = new ArrayList<List<Integer>>();
+        if (root == null) {
+            return paths;
+        }
+        List<Integer> curPath = new ArrayList<>();
+        findPath(root, sum, curPath, paths);
+        return paths;
+    }
+    
+    public void findPath(TreeNode root, int sum, List<Integer> curPath, List<List<Integer>> paths) {
+        curPath.add(root.val);
+        if (root.left == null && root.right == null && sum - root.val == 0) {
+            paths.add(curPath);
+        }
+        if (root.left != null) {
+            List<Integer> path = new ArrayList<>(curPath);
+            findPath(root.left, sum - root.val, path, paths);
+        }
+        if (root.right != null) {
+            List<Integer> path = new ArrayList<>(curPath);
+            findPath(root.right, sum - root.val, path, paths);
+        }
+    }
+}
