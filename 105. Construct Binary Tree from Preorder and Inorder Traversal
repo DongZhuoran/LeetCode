@@ -1,0 +1,54 @@
+/**
+ * Given preorder and inorder traversal of a tree, construct the binary tree.
+ *
+ * Note:
+ * You may assume that duplicates do not exist in the tree.
+ *
+ * For example, given
+ * preorder = [3,9,20,15,7]
+ * inorder = [9,3,15,20,7]
+ * Return the following binary tree:
+ * 
+ *     3
+ *    / \
+ *   9  20
+ *     /  \
+ *    15   7
+ */
+ 
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if (preorder == null || preorder.length == 0 ||
+           inorder == null || inorder.length == 0) {
+            return null;
+        }
+        HashMap<Integer, Integer> hm = new HashMap<>();
+        for (int i = 0; i < inorder.length; ++i) {
+            hm.put(inorder[i], i);
+        }
+        return buildSubTree(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1, hm);
+    }
+    
+    private TreeNode buildSubTree(int[] preorder, int pre_start, int pre_end,
+                                 int[] inorder, int in_start, int in_end, HashMap<Integer, Integer> hm) {
+        if (pre_start > pre_end || in_start > in_end) {
+            return null;
+        }
+        TreeNode root = new TreeNode(preorder[pre_start]);
+        int root_idx = hm.get(root.val);
+        TreeNode left = buildSubTree(preorder, pre_start + 1, pre_start + root_idx - in_start, inorder, in_start, root_idx - 1, hm);
+        TreeNode right = buildSubTree(preorder, pre_start + root_idx - in_start + 1, pre_end, inorder, root_idx + 1, in_end, hm);
+        root.left = left;
+        root.right = right;
+        return root;
+    }
+}
