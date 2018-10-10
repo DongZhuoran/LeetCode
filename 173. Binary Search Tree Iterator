@@ -1,0 +1,103 @@
+/**
+ * Implement an iterator over a binary search tree (BST). Your iterator will be 
+ * initialized with the root node of a BST.
+ *
+ * Calling next() will return the next smallest number in the BST.
+ *
+ * Note: next() and hasNext() should run in average O(1) time and uses O(h) memory, 
+ * where h is the height of the tree.
+ */
+ 
+/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+ 
+// next() and hasNext() run in o(1) time and use O(h) memmory.
+/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+
+public class BSTIterator {
+    private Stack<TreeNode> stack;
+
+    public BSTIterator(TreeNode root) {
+        stack = new Stack<>();
+        while (root != null) {
+            stack.push(root);
+            root = root.left;
+        }
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.empty();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode retNode = stack.pop();
+        TreeNode curNode = retNode;
+        if (curNode.right != null) {
+            curNode = curNode.right;
+            while (curNode != null) {
+                stack.push(curNode);
+                curNode = curNode.left;
+            }
+        }
+        return retNode.val;
+    }
+}
+
+/**
+ * Your BSTIterator will be called like this:
+ * BSTIterator i = new BSTIterator(root);
+ * while (i.hasNext()) v[f()] = i.next();
+ */
+ 
+// next() and hasNext() run in O(1) time but use O(n) memory.
+public class BSTIterator {
+    private List<Integer> BST;
+    private int cursor;
+
+    public BSTIterator(TreeNode root) {
+        BST = new ArrayList<>();
+        cursor = 0;
+        inorderTraversal(root, BST);
+    }
+    
+    private void inorderTraversal(TreeNode root, List<Integer> BST) {
+        if (root != null) {
+            inorderTraversal(root.left, BST);
+            BST.add(root.val);
+            inorderTraversal(root.right, BST);
+        }
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return cursor < BST.size();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        return BST.get(cursor++);
+    }
+}
+
+/**
+ * Your BSTIterator will be called like this:
+ * BSTIterator i = new BSTIterator(root);
+ * while (i.hasNext()) v[f()] = i.next();
+ */
