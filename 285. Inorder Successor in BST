@@ -1,0 +1,85 @@
+/**
+ * Given a binary search tree and a node in it, find the in-order successor of 
+ * that node in the BST.
+ * Note: If the given node has no in-order successor in the tree, return null.
+ */
+ 
+// Solution 1: iterative solution which can be used in finding any tree inorder successor.
+class Solution {
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        Stack<TreeNode> stack = new Stack<>();
+        boolean b = false;
+        while (root != null || !stack.empty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            if (b == true) {
+                return stack.pop();
+            }
+            if (root == p) {
+                b = true;
+            }
+            root = root.right;
+        }
+        return null;
+    }
+}
+
+// Solution 2: recursive solution which can be used in finding any tree inorder successor.
+class Solution {
+    private TreeNode pre = null;
+    private TreeNode suc = null;
+    
+    public TreeNode inorderSuccesor(TreeNode root, TreeNode p) {
+        inorder(root, p);
+        return suc;
+    }
+    
+    public void inorder(TreeNode root, TreeNode p) {
+        if (root == null || p == null) {
+            return;
+        }
+        inorder(root.left, p);
+        if (pre == p) {
+            suc = root;
+            return;
+        }
+        pre = root;
+        inorder(root.right, p);
+    }
+}
+
+// Solution 3: iterative solution which can only find inorder successor in BST.
+class Solution {
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        if (root == null || p == null) {
+            return null;
+        }
+        TreeNode res;
+        while (root != null) {
+            if (root.val > p.val) {
+                res = root;
+                root = root.left
+            } else {
+                root = root.right;
+            }
+        }
+        return res;
+    }
+}
+
+// Solution 4: recursive solution which can only find inorder successor in BST.
+class Solution {
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        if (root == null || p == null) {
+            return null;
+        }
+        if (root.val <= p) {
+            return inorderSuccessor(root.right, p);
+        } else {
+            TreeNode node = inorderSuccessor(root.left, p);
+            return node == null ? null : root;
+        }
+    }
+}
