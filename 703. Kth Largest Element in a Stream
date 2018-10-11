@@ -18,7 +18,8 @@
  * Note: 
  * - You may assume that nums' length ≥ k-1 and k ≥ 1.
  */
- 
+
+// Priority Queue. Time complexity: constructor - O(nlog k), add- O(logk), findKthLargest - O(1).
 class KthLargest {
     private int k;
     private PriorityQueue<Integer> pq;
@@ -41,6 +42,57 @@ class KthLargest {
             }
         }
         return pq.peek();
+    }
+}
+
+// BST.
+class KthLargest {
+    private int k;
+    private TreeNode root;
+
+    public KthLargest(int k, int[] nums) {
+        this.k = k;
+        for (int num: nums) {
+            root = add(root, num);
+        }
+    }
+    
+    public int add(int val) {
+        root = add(root, val);
+        return findKthLargest(root);
+    }
+    
+    private TreeNode add(TreeNode root, int val) {
+        if (root == null) { return new TreeNode(val); }
+        root.count++;
+        if (root.val > val) {
+            root.left = add(root.left, val);
+        } else {
+            root.right = add(root.right, val);
+        }
+        return root;
+    }
+    
+    private int findKthLargest(TreeNode root) {
+        int count = this.k;
+        while (count > 0) {
+            int pos = 1 + (root.right == null ? 0 : root.right.count);
+            if (count == pos) {
+                break;
+            } else if (count > pos) {
+                count -= pos;
+                root = root.left;
+            } else {
+                root = root.right;
+            }
+        }
+        return root.val;
+    }
+    
+    class TreeNode {
+        int val, count = 1;
+        TreeNode left, right;
+        public TreeNode(int val) { this.val = val; }
     }
 }
 
