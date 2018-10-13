@@ -31,6 +31,55 @@
  * Explanation: The endWord "cog" is not in wordList, therefore no possible transformation.
  */
 
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        // Bidrectional BFS
+        HashSet<String> beginSet = new HashSet<>(wordList);
+        HashSet<String> endSet = new HashSet<>(wordList);
+        Queue<String> beginQ = new LinkedList<>();
+        Queue<String> endQ = new LinkedList<>();
+        // 'endWord' can be not in wordList.
+        if (!beginSet.contains(endWord)) {
+            return 0;
+        } else { // Remove 'endWord' from endSet in case of hitting 'endWord' at the first search.
+            endSet.remove(endWord);
+        }
+        int res = 1;
+        beginQ.offer(beginWord);
+        endQ.offer(endWord);
+        while (!beginQ.isEmpty() && !endQ.isEmpty()) {
+            // Decrease the number of nodes that we have to search.
+            if (beginQ.size() > endQ.size()) {
+                Queue<String> q = beginQ;
+                beginQ = endQ;
+                endQ = q;
+                HashSet<String> hs = beginSet;
+                beginSet = endSet;
+                endSet = hs;
+            }
+            int size = beginQ.size();
+            res++;
+            for (int i = 0; i < size; ++i) {
+                String cur = beginQ.poll();
+                for (int j = 0; j < cur.length(); ++j) {
+                    StringBuilder sb = new StringBuilder(cur);
+                    for (char c = 'a'; c <= 'z'; ++c) {
+                        sb.setCharAt(j, c);
+                        if (beginSet.contains(sb.toString())) {
+                            if (!endSet.contains(sb.toString()) || sb.toString().equals(endWord)) {
+                                return res;
+                            }
+                            beginSet.remove(sb.toString());
+                            beginQ.offer(sb.toString());
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+}
+
 // Time complexity: O(26n * L).
 class Solution {
     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
