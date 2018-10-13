@@ -1,0 +1,124 @@
+/**
+ * Given two words (beginWord and endWord), and a dictionary's word list, find all shortest 
+ * transformation sequence(s) from beginWord to endWord, such that:
+ *
+ * Only one letter can be changed at a time
+ * Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
+ * Note:
+ * Return an empty list if there is no such transformation sequence.
+ * All words have the same length.
+ * All words contain only lowercase alphabetic characters.
+ * You may assume no duplicates in the word list.
+ * You may assume beginWord and endWord are non-empty and are not the same.
+ *
+ * Example 1:
+ * Input:
+ * beginWord = "hit",
+ * endWord = "cog",
+ * wordList = ["hot","dot","dog","lot","log","cog"]
+ *
+ * Output:
+ * [
+ *   ["hit","hot","dot","dog","cog"],
+ *   ["hit","hot","lot","log","cog"]
+ * ]
+ *
+ * Example 2:
+ * Input:
+ * beginWord = "hit"
+ * endWord = "cog"
+ * wordList = ["hot","dot","dog","lot","log"]
+ *
+ * Output: []
+ * Explanation: The endWord "cog" is not in wordList, therefore no possible transformation.
+ */
+ 
+// Time limit exceeded.
+class Solution {
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        // DFS to find ladders
+        int ladderLen = ladderLength(beginWord, endWord, wordList);
+        List<List<String>> res = new ArrayList<List<String>>();
+        // If there is no solution.
+        if (ladderLen == 0) {
+            return res;
+        }
+        HashSet<String> hs = new HashSet(wordList);
+        dfs(beginWord, endWord, res, new ArrayList<String>(), hs, ladderLen);
+        return res;
+    }
+    
+    private void dfs(String beginWord, String endWord, List<List<String>> res, List<String> ladder, 
+                     HashSet<String> hs, int dist) {
+        if (dist <= 1) {
+            if (dist == 1 && beginWord.equals(endWord)) {
+                ladder.add(beginWord);
+                res.add(new ArrayList<>(ladder));
+                ladder.remove(ladder.size() - 1);
+            }
+            // System.out.println(beginWord + " " + endWord);
+            // System.out.println(String.valueOf(ladder));
+            return;
+        }
+        ladder.add(beginWord);
+        for (int i = 0; i < beginWord.length(); ++i) {
+            StringBuilder sb = new StringBuilder(beginWord);
+            for (char ch = 'a'; ch < 'z'; ++ch) {
+                sb.setCharAt(i, ch);
+                if (hs.contains(sb.toString())) {
+                    hs.remove(sb.toString());
+                    dfs(sb.toString(), endWord, res, ladder, hs, dist - 1);
+                    hs.add(sb.toString());
+                }
+            }
+        }
+        ladder.remove(ladder.size() - 1);
+    }
+    
+    private int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        // Bidrectional BFS
+        HashSet<String> beginSet = new HashSet<>(wordList);
+        HashSet<String> endSet = new HashSet<>(wordList);
+        Queue<String> beginQ = new LinkedList<>();
+        Queue<String> endQ = new LinkedList<>();
+        // 'endWord' can be not in wordList.
+        if (!beginSet.contains(endWord)) {
+            return 0;
+        } else { // Remove 'endWord' from endSet in case of hitting 'endWord' at the first search.
+            endSet.remove(endWord);
+        }
+        int res = 1;
+        beginQ.offer(beginWord);
+        endQ.offer(endWord);
+        while (!beginQ.isEmpty() && !endQ.isEmpty()) {
+            // Decrease the number of nodes that we have to search.
+            if (beginQ.size() > endQ.size()) {
+                Queue<String> q = beginQ;
+                beginQ = endQ;
+                endQ = q;
+                HashSet<String> hs = beginSet;
+                beginSet = endSet;
+                endSet = hs;
+            }
+            int size = beginQ.size();
+            res++;
+            for (int i = 0; i < size; ++i) {
+                String cur = beginQ.poll();
+                for (int j = 0; j < cur.length(); ++j) {
+                    StringBuilder sb = new StringBuilder(cur);
+                    for (char c = 'a'; c <= 'z'; ++c) {
+                        sb.setCharAt(j, c);
+                        if (beginSet.contains(sb.toString())) {
+                            if (!endSet.contains(sb.toString()) || sb.toString().equals(endWord)) {
+                                return res;
+                            }
+                            beginSet.remove(sb.toString());
+                            beginQ.offer(sb.toString());
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+}
