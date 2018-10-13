@@ -32,7 +32,59 @@
  * Output: []
  * Explanation: The endWord "cog" is not in wordList, therefore no possible transformation.
  */
- 
+
+// Time limit exceeded.
+class Solution {    
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        Queue<Word> queue = new LinkedList<>();
+        HashSet<String> set = new HashSet<>(wordList);
+        List<List<String>> res = new ArrayList<List<String>>();
+        if (!set.contains(endWord)) {
+            return res;
+        }
+        queue.offer(new Word(beginWord));
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; ++i) {
+                Word cur = queue.poll();
+                for (int j = 0; j < cur.word.length(); ++j) {
+                    StringBuilder sb = new StringBuilder(cur.word);
+                    for (char c = 'a'; c <= 'z'; ++c) {
+                        sb.setCharAt(j, c);
+                        if (sb.toString().equals(cur.word)) { continue; }
+                        if (set.contains(sb.toString())) {
+                            if (sb.toString().equals(endWord)) {
+                                // todo: add to list
+                                List<String> ladder = new ArrayList<>();
+                                ladder.add(sb.toString());
+                                Word temp = cur;
+                                while (temp != null) {
+                                    ladder.add(0, temp.word);
+                                    temp = temp.father;
+                                }
+                                res.add(ladder);
+                                
+                            }
+                            queue.offer(new Word(sb.toString(), cur));
+                        }
+                    }
+                }
+            }
+            if (res.size() > 0) {
+                return res;
+            }
+        }
+        return new ArrayList<List<String>>();
+    }
+    
+    class Word {
+        String word;
+        Word father;
+        public Word(String word) { this.word = word; }
+        public Word(String word, Word father) { this.word = word; this.father = father; }
+    }
+}
+
 // Time limit exceeded.
 class Solution {
     public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
