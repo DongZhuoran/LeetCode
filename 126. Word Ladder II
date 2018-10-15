@@ -33,6 +33,166 @@
  * Explanation: The endWord "cog" is not in wordList, therefore no possible transformation.
  */
 
+// Accepted solution. BFS + DFS.
+class Solution {
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        HashSet<String> dict = new HashSet<>(wordList);
+        List<List<String>> res = new ArrayList<List<String>>();
+        HashMap<String, Integer> distances = new HashMap<>();
+        HashMap<String, List<String>> neighbors = new HashMap<>();
+        List<String> ladder = new ArrayList<>();
+        
+        bfs(beginWord, endWord, dict, neighbors, distances);
+        System.out.println(neighbors.get(beginWord));
+        dfs(beginWord, endWord, dict, neighbors, distances, ladder, res);
+        return res;
+    }
+    
+    private void bfs(String beginWord, String endWord, HashSet<String> dict, 
+                     HashMap<String, List<String>> neighbors, HashMap<String, Integer> distances) {
+        neighbors.put(beginWord, new ArrayList<>());
+        for (String word: dict) {
+            neighbors.put(word, new ArrayList<>());
+        }
+        
+        boolean findEnd = false;
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        distances.put(beginWord, 0);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; ++i) {
+                String cur = queue.poll();
+                int curDist = distances.get(cur);
+                List<String> curNeighbors = getNeighbors(cur, dict);
+                for (String neighbor: curNeighbors) {
+                    neighbors.get(cur).add(neighbor);
+                    if (!distances.containsKey(neighbor)) {
+                        distances.put(neighbor, curDist + 1);
+                        if (neighbor.equals(endWord)) {
+                            findEnd = true;
+                        } else {
+                            queue.offer(neighbor);
+                        }
+                    }
+                }
+            }
+            if (findEnd) {
+               return;
+            }
+        }
+    }
+    
+    private List<String> getNeighbors(String word, HashSet<String> dict) {
+        List<String> neighbors = new ArrayList<>();
+        for (int i = 0; i < word.length(); ++i) {
+            StringBuilder sb = new StringBuilder(word);
+            for (char ch = 'a'; ch <= 'z'; ++ch) {
+                if (ch == sb.charAt(i)) { continue; }
+                sb.setCharAt(i, ch);
+                if (dict.contains(sb.toString())) {
+                    neighbors.add(sb.toString());
+                }
+            }
+        }
+        return neighbors;
+    }
+    
+    private void dfs(String beginWord, String endWord, HashSet<String> dict, 
+                     HashMap<String, List<String>> neighbors, HashMap<String, Integer> distances,
+                     List<String> ladder, List<List<String>> res) {
+        ladder.add(beginWord);
+        if (beginWord.equals(endWord)) {
+            res.add(new ArrayList<>(ladder));
+        } else {
+            for (String next: neighbors.get(beginWord)) {
+                if (distances.get(beginWord) + 1 == distances.get(next)) {
+                    dfs(next, endWord, dict, neighbors, distances, ladder, res);
+                }
+            }
+        }
+        ladder.remove(ladder.size() - 1);
+    }
+}
+
+// Time limit exceeded.
+class Solution {
+    private HashMap<String, Integer> hm = new HashMap<>();
+    
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        int ladderLen = ladderLength(beginWord, endWord, wordList);
+        List<List<String>> res = new ArrayList<List<String>>();
+        if (ladderLen == 0) {
+            return res;
+        }
+        for (Map.Entry<String, Integer> entry: hm.entrySet()) {
+            hm.put(entry.getKey(), ladderLen - entry.getValue() + 1);
+        }
+        HashSet<String> hs = new HashSet(wordList);
+        dfs(beginWord, endWord, res, new ArrayList<String>(), hs, ladderLen);
+        return res;
+    }
+    
+    private void dfs(String beginWord, String endWord, List<List<String>> res, List<String> ladder, 
+                     HashSet<String> hs, int dist) {
+        if (dist < 1 || hm.get(beginWord) != null && hm.get(beginWord) > dist) {
+            return;
+        }
+        if (dist == 1 && beginWord.equals(endWord)) {
+            ladder.add(beginWord);
+            res.add(new ArrayList<>(ladder));
+            ladder.remove(ladder.size() - 1);
+            return;
+        }
+        ladder.add(beginWord);
+        for (int i = 0; i < beginWord.length(); ++i) {
+            StringBuilder sb = new StringBuilder(beginWord);
+            for (char ch = 'a'; ch < 'z'; ++ch) {
+                sb.setCharAt(i, ch);
+                if (hs.contains(sb.toString())) {
+                    hs.remove(sb.toString());
+                    dfs(sb.toString(), endWord, res, ladder, hs, dist - 1);
+                    hs.add(sb.toString());
+                }
+            }
+        }
+        ladder.remove(ladder.size() - 1);
+    }
+    
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Queue<String> queue = new LinkedList<>();
+        HashSet<String> set = new HashSet<>(wordList);
+        int res = 1;
+        boolean isHit = false;
+        queue.offer(beginWord);
+        hm.put(beginWord, res);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            res++;
+            for (int i = 0; i < size; ++i) {
+                String cur = queue.poll();
+                for (int j = 0; j < cur.length(); ++j) {
+                    StringBuilder sb = new StringBuilder(cur);
+                    for (char c = 'a'; c <= 'z'; ++c) {
+                        sb.setCharAt(j, c);
+                        if (set.contains(sb.toString())) {
+                            if (sb.toString().equals(endWord)) {
+                                isHit = true;
+                            } else {
+                                queue.offer(sb.toString());
+                            }
+                            set.remove(sb.toString());
+                            hm.put(sb.toString(), res);
+                        }
+                    }
+                }
+            }
+            if (isHit) { return res; }
+        }
+        return 0;
+    }
+}
+
 // Time limit exceeded.
 class Solution {    
     public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
@@ -88,7 +248,6 @@ class Solution {
 // Time limit exceeded.
 class Solution {
     public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
-        // DFS to find ladders
         int ladderLen = ladderLength(beginWord, endWord, wordList);
         List<List<String>> res = new ArrayList<List<String>>();
         // If there is no solution.
@@ -108,8 +267,6 @@ class Solution {
                 res.add(new ArrayList<>(ladder));
                 ladder.remove(ladder.size() - 1);
             }
-            // System.out.println(beginWord + " " + endWord);
-            // System.out.println(String.valueOf(ladder));
             return;
         }
         ladder.add(beginWord);
