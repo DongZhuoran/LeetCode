@@ -1,0 +1,112 @@
+/**
+ * Design an algorithm to encode an N-ary tree into a binary tree and decode the binary tree to get the 
+ * original N-ary tree. An N-ary tree is a rooted tree in which each node has no more than N children. 
+ * Similarly, a binary tree is a rooted tree in which each node has no more than 2 children. There is no 
+ * restriction on how your encode/decode algorithm should work. You just need to ensure that an N-ary tree 
+ * can be encoded to a binary tree and this binary tree can be decoded to the original N-nary tree structure.
+ *
+ * For example, you may encode the following 3-ary tree to a binary tree in this way:
+ * (see: https://leetcode.com/problems/encode-n-ary-tree-to-binary-tree/description/)
+ * Note that the above is just an example which might or might not work. You do not necessarily need to follow
+ * this format, so please be creative and come up with different approaches yourself.
+ *
+ * Note:
+ * N is in the range of [1, 1000]
+ * Do not use class member/global/static variables to store states. Your encode and decode algorithms 
+ * should be stateless.
+ * Similar Questions: Serialize and Deserialize N-ary Tree
+ */
+
+/*
+ * Definition for a Node.
+ * class Node {
+ *     int val;
+ *     List<Node> children;
+ *     Node() {}
+ *     Node(int _val, List<Node> _children) {
+ *         val = _val;
+ *         children = _children;
+ *     }
+ * };
+ */
+/**
+ * Definition for a binary tree node.
+ * class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * };
+ */
+ 
+class Codec {
+    // Encodes an n-ary tree to a binary tree.
+    public TreeNode encode(Node root) {
+        if (root == null) {
+            return root;
+        }
+        
+        TreeNode res = new TreeNode(root.val);
+        Stack<Node> st1 = new Stack<>();
+        st1.push(root);
+        Stack<TreeNode> st2 = new Stack<>();
+        st2.push(res);
+        Set<Node> visited = new HashSet<>();
+        while (!st1.empty()) {
+            Node curNode = st1.pop();
+            TreeNode curTreeNode = st2.pop();
+            if (curNode.children != null && curNode.children.size() > 0 && !visited.contains(curNode.children.get(0))) {
+                visited.add(curNode.children.get(0));
+                curTreeNode.right = new TreeNode(curNode.children.get(0));
+                st1.push(curNode.children.get(0));
+                st2.push(curTreeNode.right);
+                curTreeNode = curTreeNode.right;
+                
+                for (int i = 1; i < curNode.children.size(); ++i) {
+                    visited.add(curNode.children.get(i));
+                    curTreeNode.left = new TreeNode(curNode.children.get(i));
+                    st1.push(curNode.children.get(i));
+                    st2.push(curTreeNode.left);
+                    curTreeNode = curTreeNode.left;
+                }
+            }
+        }
+        return res;
+    }
+    
+    // Decodes your binary tree to an n-ary tree.
+    public Node decode(TreeNode root) {
+        if (root == null) {
+            return root;
+        }
+        
+        Node res = new Node();
+        Queue<TreeNode> q1 = new LinkedList<>();
+        q1.offer(root);
+        Queue<TreeNode> q2 = new LinkedList<>();
+        q2.offer(res);
+        while (!q1.isEmpty()) {
+            TreeNode curTreeNode = q1.poll();
+            Node curNode = q2.poll();
+            curNode.val = curTreeNode.val;
+            List<Node> children = new ArrayList<>();
+            if (curTreeNode.right != null) {
+                children.add(new Node());
+                q1.offer(curTreeNode.right);
+                q2.offer(children.get(0));
+                curTreeNode = curTreeNode.right;
+            }
+            while (curTreeNode.left != null) {
+                children.add(new Node());
+                q1.offer(curNode.left);
+                q2.offer(children.get(children.size() - 1));
+                curTreeNode = curTreeNode.left;
+            }
+            curNode.children = children;
+        }
+        return res;
+    }
+}
+// Your Codec object will be instantiated and called as such:
+// Codec codec;
+// codec.decode(codec.encode(root));
