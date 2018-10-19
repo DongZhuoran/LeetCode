@@ -1,0 +1,51 @@
+/**
+ * Given an n-ary tree, return the postorder traversal of its nodes' values.
+ *
+ * For example, given a 3-ary tree:
+ * 
+ * Return its postorder traversal as: [5,6,3,2,4,1].
+ *
+ * Note:
+ * Recursive solution is trivial, could you do it iteratively?
+ */
+ 
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List<Node> children;
+
+    public Node() {}
+
+    public Node(int _val,List<Node> _children) {
+        val = _val;
+        children = _children;
+    }
+};
+*/
+
+// Iterative solution. Time complexity: O(n).
+class Solution {
+    public List<Integer> postorder(Node root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        Stack<Node> stack = new Stack<>();
+        Set<Node> visited = new HashSet<>();
+        List<Integer> res = new ArrayList<>();
+        stack.push(root);
+        while (!stack.empty()) {
+            Node cur = stack.peek();
+            if (!visited.contains(cur)) {
+                visited.add(cur);
+                for (int i = cur.children.size() - 1; i >= 0; --i) {
+                    stack.push(cur.children.get(i));
+                }
+            } else {
+                res.add(cur.val);
+                stack.pop();
+            }
+        }
+        return res;
+    }
+}
