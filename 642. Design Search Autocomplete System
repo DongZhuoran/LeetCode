@@ -77,55 +77,52 @@ class AutocompleteSystem {
     
     public List<String> input(char c) {
         if (c == '#') {
-            sentenceMap.put(curInput, 1 + sentenceMap.getOrDefault(curInput, 0));
+            sentenceMap.put(curInput.toString(), 1 + sentenceMap.getOrDefault(curInput, 0));
             return new ArrayList<>();
         } else {
             curInput.append(c);
         }
         
-        int size = 0;
-        int minHot = -1;
-        String minSentence = "";
-        List<String> res = new ArrayList<>();
-        for (String sentence: sentenceMap.keySet()) {
-            if (sentence.startsWith(curInput.toString())) {
-                if (size < 3) {
-                    res.add(sentence);
-                    size++;
-                    if (minHot == -1 || minHot > sentenceMap.get(sentence) ||
-                                    minHot == sentenceMap.get(sentence) && minSentence.compareTo(sentence) < 0) {
-                        minHot = sentenceMap.get(sentence);
-                        minSentence = sentence;
+        List<String> res = new ArrayList<>();        
+        PriorityQueue<Entry> pQueue = new PriorityQueue<>(new Comparator<Entry>() {
+                @Override
+                public int compare(Entry e1, Entry e2) {
+                    if (e1.value != e2.value) {
+                        return e2.value - e1.value;
+                    } else {
+                        return e2.key.compareTo(e1.key);
+                    }
+                }
+        });
+        for (Map.Entry<String, Integer> entry: sentenceMap.entrySet()) {
+            if (entry.getKey().startsWith(curInput.toString())) {
+                if (pQueue.size() == 3) {
+                    Entry myEntry = pQueue.peek();
+                    if (myEntry.value < entry.getValue() || 
+                            myEntry.value == entry.getValue() && myEntry.key.compareTo(entry.getKey()) > 0) {
+                        pQueue.poll();
+                        pQueue.add(new Entry(entry.getKey(), entry.getValue())); 
                     }
                 } else {
-                    if (sentenceMap.get(sentence) > minHot || 
-                                    sentenceMap.get(sentence) == minHot && sentence.compareTo(minSentence) < 0) {
-                        res.remove(minSentence);
-                        res.add(sentence);
-                        minHot = -1;
-                        for (Sting s: res) {
-                            if (minHot == -1 || minHot > sentenceMap.get(s) || 
-                                    minHot == sentenceMap.get(s) && minSentence.compareTo(s) < 0) {
-                                minHot = sentenceMap.get(s);
-                                minSentence = s;
-                            }
-                        }
-                    }
+                    pQueue.add(new Entry(entry.getKey(), entry.getValue()));
                 }
             }
         }
-        // Sort res according to hot rates.
-        for (int i = res.size(); i > 0; --i) {
-            for (int j = 0; j < i - 1; ++j) {
-                if (sentenceMap.get(res.get(j)) < sentenceMap.get(res.get(j + 1))) {
-                    String tmp = res.get(j);
-                    res.get(j) = res.get(j + 1);
-                    res.get(j + 1) = tmp;
-                }
-            }
+        int size = pQueue.size();
+        for (int i = 0; i < size; ++i) {
+            res.add(pQueue.poll().key);
         }
-        // The above part can be optimized by PriorityQueue.
         return res;
+    }
+    
+    class Entry {
+        String key;
+        int value;
+        public Entry() {}
+        public Entry(String _key, int _value) {
+            key = _key;
+            value = _value;
+        }
     }
 }
 
@@ -136,6 +133,7 @@ class AutocompleteSystem {
     
     public AutocompleteSystem(String[] sentences, int[] times) {
         this.curInput = new StringBuilder();
+        this.root = new TrieNode();
         // Create a trie.
         for (int i = 0; i < sentences.length; ++i) {
             insert(sentences[i], times[i]);
@@ -144,19 +142,12 @@ class AutocompleteSystem {
     
     public List<String> input(char c) {
         if (c == '#') {
-            // TODO: update historical sentences and times correspondingly.
+            insert(curInput.toString(), 1);
             return new ArrayList<>();
         } else {
             curInput.append(c);
         }
-        
-        Map<String, Integer> resMap = search(curInput);
-        return getTop3(resMap);
-    }
-    
-    private List<String> getTop3(Map<String, Integer> resMap) {
-        List<String> res = new ArrayList<>();
-        // ...
+        return search(curInput.toString());
     }
     
     private void insert(String sentence, int time) {
@@ -167,34 +158,58 @@ class AutocompleteSystem {
             }
             cur = cur.children.get(sentence.charAt(i));
         }
-        cur.hot = time;
+        cur.hot += time;
     }
     
-    private Map<String, Integer> search(String curString) {
+    private List<String> search(String curString) {
         TrieNode cur = root;
         for (int i = 0; i < curString.length(); ++i) {
             if (!cur.children.containsKey(curString.charAt(i))) {
-                return null;
+                return new ArrayList<>();
             }
+            cur = cur.children.get(curString.charAt(i));
         }
-        Map<String, Integer> res = new HashMap<>();
-        StringBuilder sentence = new StringBuilder();
-        search_helper(cur, res, sentence);
+        PriorityQueue<Entry> pQueue = new PriorityQueue<>(new Comparator<Entry>() {
+            @Override
+            public int compare(Entry e1, Entry e2) {
+                if (e1.value == e2.value) {
+                    return e2.key.compareTo(e1.key);
+                } else {
+                    return e2.value - e1.value;
+                }
+            }
+        });
+        StringBuilder sentence = new StringBuilder(curString);
+        search_helper(cur, pQueue, sentence);
+        List<String> res = new ArrayList<>();
+        int size = pQueue.size();
+        for (int i = 0; i < size; ++i) {
+            res.add(pQueue.poll().key);
+        }
         return res;
     }
     
-    private void search_helper(TrieNode node, Map<String, Integer> res, StringBuilder sentence) {
+    private void search_helper(TrieNode node, PriorityQueue<Entry> pQueue, StringBuilder sentence) {
         TrieNode cur = node;
         if (cur.hot > 0) {
-            res.put(sentence, hot);
+            if (pQueue.size() == 3) {
+                Entry myEntry = pQueue.peek();
+                if (myEntry.value < cur.hot ||
+                        myEntry.value == cur.hot && myEntry.key.compareTo(sentence.toString()) > 0) {
+                    pQueue.poll();
+                    pQueue.add(new Entry(sentence.toString(), cur.hot));
+                }
+            } else {
+                pQueue.add(new Entry(sentence.toString(), cur.hot));
+            }
         }
         if (cur.children.size() == 0) {
             return;
         }
-        for (Map.Entry entry: cur.children) {
+        for (Map.Entry<Character, TrieNode> entry: cur.children.entrySet()) {
             sentence.append(entry.getKey());
-            search_helper(entry.getValue(), res, sentence);
-            sentence.removeCharAt(sentence.size() - 1);
+            search_helper(entry.getValue(), pQueue, sentence);
+            sentence.deleteCharAt(sentence.length() - 1);
         }
     }
     
@@ -204,6 +219,15 @@ class AutocompleteSystem {
         public TrieNode() {
             hot = 0;
             children = new HashMap<>();
+        }
+    }
+    
+    class Entry {
+        String key;
+        int value;
+        public Entry(String _key, int _value) {
+            key = _key;
+            value = _value;
         }
     }
 }
