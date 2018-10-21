@@ -1,0 +1,100 @@
+/**
+ * Given a non-empty array of numbers, a0, a1, a2, … , an-1, where 0 ≤ ai < 231.
+ *
+ * Find the maximum result of ai XOR aj, where 0 ≤ i, j < n.
+ *
+ * Could you do this in O(n) runtime?
+ *
+ * Example:
+ * Input: [3, 10, 5, 25, 2, 8]
+ * Output: 28
+ * Explanation: The maximum result is 5 ^ 25 = 28.
+ */
+
+
+// Trie. Time complexity: O(n).
+class Solution {
+    private TrieNode root;
+    
+    public int findMaximumXOR(int[] nums) {
+        if (nums == null || nums.length < 2) {
+            return 0;
+        }
+        
+        // Construct a trie.
+        root = new TrieNode(-1);
+        for (int num: nums) {
+            insert(num);
+        }
+        
+        int res = Integer.MIN_VALUE;
+        for (int num: nums) {
+            res = Math.max(res, search(num));
+        }
+        return res;
+    }
+    
+    private void insert(int num) {
+        TrieNode cur = root;
+        for (int i = 31; i >= 0; --i) {
+            int curBit = num & (1 << i);
+            if (curBit == 0) {
+                if (cur.left == null) {
+                    cur.left = new TrieNode(0);
+                }
+                cur = cur.left;
+            } else {
+                if (cur.right == null) {
+                    cur.right = new TrieNode(1);
+                }
+                cur = cur.right;
+            }
+        }
+    }
+    
+    private int search(int num) {
+        TrieNode cur = root;
+        int res = 0;
+        for (int i = 31; i >= 0; --i) {
+            int curBit = num & (1 << i);
+            if (curBit == 0) {
+                cur = cur.right == null ? cur.left : cur.right;
+            } else {
+                cur = cur.left == null ? cur.right : cur.left;
+            }
+            res += curBit ^ (cur.val << i);
+        }
+        return res;
+    }
+    
+    class TrieNode {
+        int val;  // -1, 0 or 1
+        TrieNode left, right;
+        public TrieNode(int _val) { val = _val; }
+        
+    }
+}
+
+// Prefix hashmap. Time complexity: O(n).
+class Solution { 
+    public int findMaximumXOR(int[] nums) {
+        int max = 0, mask = 0;
+        for (int i = 31; i >= 0; --i) {
+            mask = mask | (1 << i);
+            Set<Integer> set = new HashSet<>();
+            // Constrcut a prefix hashset
+            for (int num: nums) {
+                set.add(num & mask);
+            }
+            
+            int tmp = max | (1 << i);
+            for (int prefix: set) {
+                if (set.contains(tmp ^ prefix)) {
+                    max = tmp;
+                    break;
+                }
+            }
+        }
+        return max;
+    }
+}
