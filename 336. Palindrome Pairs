@@ -12,7 +12,92 @@
  * Output: [[0,1],[1,0]] 
  * Explanation: The palindromes are ["battab","tabbat"]
  */
- 
+
+// Trie.
+class Solution {
+    private TrieNode root;
+    
+    public List<List<Integer>> palindromePairs(String[] words) {
+        if (words == null || words.length < 2) {
+            return new ArrayList<>();
+        }
+        
+        // Construct a trie.
+        root = new TrieNode();
+        for (int i = 0; i < words.length; ++i) {
+            insert(words[i], i);
+        }
+        
+        List<List<Integer>> res = new ArrayList<List<Integer>>();
+        for (int i = 0; i < words.length; ++i) {
+            res.addAll(search(words[i], i));
+        }
+        return res;
+    }
+    
+    private void insert(String word, int index) {
+        TrieNode cur = root;
+        for (int i = 0; i < word.length(); ++i) {
+            if (!cur.children.containsKey(word.charAt(i))) {
+                cur.children.put(word.charAt(i), new TrieNode());
+            }
+            cur = cur.children.get(word.charAt(i));
+        }
+        cur.index = index;
+    }
+    
+    private List<List<Integer>> search(String word, int index) {
+        TrieNode cur = root;
+        word = (new StringBuilder(word)).reverse().toString();
+        List<List<Integer>> pairs = new ArrayList<List<Integer>>();
+        for (int i = 0; i < word.length(); ++i) {
+            if (cur.index != -1 && isPalindrome(word.substring(i))) {
+                pairs.add(new ArrayList<>(Arrays.asList(cur.index, index)));
+            }
+            if (!cur.children.containsKey(word.charAt(i))) {
+                return pairs;
+            }
+            cur = cur.children.get(word.charAt(i));
+        }
+        findPalindrome(cur, index, new StringBuilder(), pairs);
+        return pairs;
+    }
+    
+    private void findPalindrome(TrieNode node, int index, StringBuilder curWord, List<List<Integer>> pairs) {
+        if (node.index != -1 && isPalindrome(curWord.toString())) {
+            if (node.index != index) {
+                pairs.add(new ArrayList<>(Arrays.asList(node.index, index)));
+            }
+        }
+        for (Map.Entry<Character, TrieNode> entry: node.children.entrySet()) {
+            curWord.append(entry.getKey());
+            findPalindrome(entry.getValue(), index, curWord, pairs);
+            curWord.deleteCharAt(curWord.length() - 1);
+        }
+    }
+    
+    private boolean isPalindrome(String s) {
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+    
+    class TrieNode {
+        int index;
+        Map<Character, TrieNode> children;
+        public TrieNode() {
+            index = -1;
+            children = new HashMap<>();
+        }
+    }
+}
+
 // Brute force. [Time limit exceeded]
 class Solution {
     public List<List<Integer>> palindromePairs(String[] words) {
