@@ -1,0 +1,71 @@
+/**
+ * Note: This is a companion problem to the System Design problem: Design TinyURL.
+ * TinyURL is a URL shortening service where you enter a URL such as https://leetcode.com/problems/design-tinyurl 
+ * and it returns a short URL such as http://tinyurl.com/4e9iAk.
+ *
+ * Design the encode and decode methods for the TinyURL service. There is no restriction on how your encode/decode 
+ * algorithm should work. You just need to ensure that a URL can be encoded to a tiny URL and the tiny URL can be 
+ * decoded to the original URL.
+ */
+
+// Reference: https://leetcode.com/discuss/interview-question/124658/Design-a-URL-Shortener-(-TinyURL-)-System/
+public class Codec {
+    private static long id = 0;
+    private Map<Long, TinyUrl> hashMap = new HashMap<>();
+
+    // Encodes a URL to a shortened URL.
+    public String encode(String longUrl) {
+        id++;
+        String shortUrl = "http://tinyurl.com/" + idToShortUrl(id);
+        hashMap.put(id, new TinyUrl(id, longUrl, shortUrl));
+        return shortUrl;
+    }
+
+    // Decodes a shortened URL to its original URL.
+    public String decode(String shortUrl) {
+        long curId = shortUrlToId(shortUrl.substring("http://tinyurl.com/".length()));
+        String originalUrl = hashMap.get(curId).originalUrl;
+        return originalUrl;
+    }
+    
+    private String idToShortUrl(long n) {
+        char[] map = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+        StringBuilder res = new StringBuilder();
+        while (n > 0) {
+            res.append(map[(int) (n % 62)]);
+            n = n / 62;
+        }
+        return res.reverse().toString();
+    }
+    
+    private long shortUrlToId(String shortUrl) {
+        char[] url = shortUrl.toCharArray();
+        long res = 0;
+        for (int i = 0; i < url.length; ++i) {
+            if ('0' <= url[i] && url[i] <= '9') {
+                res = res * 62 + url[i] - '0';
+            } else if ('a' <= url[i] && url[i] <= 'z') {
+                res = res * 62 + url[i] - 'a' + 10;
+            } else {
+                res = res * 62 + url[i] - 'A' + 36;
+            }
+        }
+        return res;
+    }
+    
+    private class TinyUrl {
+        long id;
+        String originalUrl;
+        String shortUrl;
+        public TinyUrl() {}
+        public TinyUrl(long _id, String _originalUrl, String _shortUrl) {
+            id = _id;
+            originalUrl = _originalUrl;
+            shortUrl = _shortUrl;
+        }
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.decode(codec.encode(url));
