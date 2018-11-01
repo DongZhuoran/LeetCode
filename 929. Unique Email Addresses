@@ -24,7 +24,8 @@
  * 1 <= emails.length <= 100
  * Each emails[i] contains exactly one '@' character.
  */
- 
+
+// Prefix tree. Time complexity: O(kn), where k is average length of strings, n is number of strings.
 class Solution {
     private TrieNode root;
     
@@ -67,5 +68,27 @@ class Solution {
         int val = 0;
         Map<Character, TrieNode> children = new HashMap<>();
         public TrieNode() {}
+    }
+}
+
+// Canonical Form. Time complexity is the same to the above one.
+class Solution {
+    public int numUniqueEmails(String[] emails) {
+        if (emails.length == 0) {
+            return 0;
+        }
+        
+        Set<String> set = new HashSet<>();
+        for (String email: emails) {
+            int idx = email.indexOf("@");
+            String local = email.substring(0, idx);
+            String rest = email.substring(idx);
+            if (local.contains("+")) {
+                local = local.substring(0, local.indexOf("+"));
+            }
+            local = local.replaceAll(".", "");
+            set.add(local + rest);
+        }
+        return set.size();
     }
 }
