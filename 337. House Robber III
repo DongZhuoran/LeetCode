@@ -1,0 +1,75 @@
+/**
+ * The thief has found himself a new place for his thievery again. There is only one entrance to this area, 
+ * called the "root." Besides the root, each house has one and only one parent house. After a tour, the smart 
+ * thief realized that "all houses in this place forms a binary tree". It will automatically contact the police 
+ * if two directly-linked houses were broken into on the same night.
+ *
+ * Determine the maximum amount of money the thief can rob tonight without alerting the police.
+ *
+ * Example 1:
+ * Input: [3,2,3,null,3,null,1]
+ *      3
+ *     / \
+ *    2   3
+ *     \   \ 
+ *      3   1
+ * 
+ * Output: 7 
+ * Explanation: Maximum amount of money the thief can rob = 3 + 3 + 1 = 7.
+ *
+ * Example 2:
+ * Input: [3,4,5,1,3,null,1]
+ *     3
+ *    / \
+ *   4   5
+ *  / \   \ 
+ * 1   3   1
+ *
+ * Output: 9
+ * Explanation: Maximum amount of money the thief can rob = 4 + 5 = 9.
+ */
+ 
+// Recurence with memorization. Time/space complexity: O(n).
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int rob(TreeNode root) {
+        Map<TreeNode, Integer> amount = new HashMap<>();
+        return rec(root, amount);
+    }
+    
+    private int rec(TreeNode node, Map<TreeNode, Integer> amount) {
+        if (node == null) {
+            return 0;
+        }
+        
+        if (amount.containsKey(node)) {
+            return amount.get(node);
+        }
+        
+        int selectNode = node.val;
+        if (node.left != null) {
+            selectNode += rec(node.left.left, amount);
+            selectNode += rec(node.left.right, amount);
+        }
+        if (node.right != null) {
+            selectNode += rec(node.right.left, amount);
+            selectNode += rec(node.right.right, amount);
+        }
+        
+        int nonSelect = 0;
+        nonSelect += rec(node.left, amount);
+        nonSelect += rec(node.right, amount);
+        
+        int res = Math.max(selectNode, nonSelect);
+        amount.put(node, res);
+        return res;
+    }
+}
