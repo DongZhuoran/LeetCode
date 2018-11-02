@@ -14,6 +14,32 @@
  * ]
  */
 
+// Backtracking. The idea is same with the below one, but faster. A trade-off between space and time.
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> list = new ArrayList<>();
+        boolean[] used = new boolean[nums.length];
+        Arrays.fill(used, false);
+        backtrack(nums, list, new ArrayList<>(), used);
+        return list;
+    }
+
+    private void backtrack(int[] nums, List<List<Integer>> list, List<Integer> per, boolean[] used){
+        if(per.size() == nums.length){
+            list.add(new ArrayList<>(per));
+        } else{
+            for(int i = 0; i < nums.length; ++i){ 
+                if(used[i]) continue;
+                per.add(nums[i]);
+                used[i] = true;
+                backtrack(nums, list, per, used);
+                per.remove(per.size() - 1);
+                used[i] = false;
+            }
+        }
+    } 
+}
+
 // Backtracking. Time complexity: O(n!).
 class Solution {
     public List<List<Integer>> permute(int[] nums) {
