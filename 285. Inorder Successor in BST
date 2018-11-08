@@ -14,6 +14,7 @@ class Solution {
                 stack.push(root);
                 root = root.left;
             }
+            root = stack.pop();
             if (b == true) {
                 return stack.pop();
             }
