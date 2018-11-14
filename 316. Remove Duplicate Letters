@@ -12,7 +12,7 @@
  */
 
 // Reference: https://leetcode.com/problems/remove-duplicate-letters/discuss/76769/Java-solution-using-Stack-with-comments.
-// Time complexity: O(n^2).
+// Time complexity: O(n), where n is the length of the input string, because our stack only push and pop at most once.
 class Solution {
     public String removeDuplicateLetters(String s) {
         int[] count = new int[26];  // Count number of occurences of characters.
