@@ -1,0 +1,101 @@
+/**
+ * There are n different online courses numbered from 1 to n. Each course has some duration(course length) t and closed on 
+ * dth day. A course should be taken continuously for t days and must be finished before or on the dth day. You will start 
+ * at the 1st day.
+ *
+ * Given n online courses represented by pairs (t,d), your task is to find the maximal number of courses that can be taken.
+ * 
+ * Example:
+ * Input: [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]
+ * Output: 3
+ * Explanation: 
+ * There're totally 4 courses, but you can take 3 courses at most:
+ * First, take the 1st course, it costs 100 days so you will finish it on the 100th day, and ready to take the next course on 
+ * the 101st day.
+ * Second, take the 3rd course, it costs 1000 days so you will finish it on the 1100th day, and ready to take the next course
+ * on the 1101st day. 
+ * Third, take the 2nd course, it costs 200 days so you will finish it on the 1300th day. 
+ * The 4th course cannot be taken now, since you will finish it on the 3300th day, which exceeds the closed date.
+ *
+ * Note:
+ * The integer 1 <= d, t, n <= 10,000.
+ * You can't take two courses simultaneously.
+ */
+
+// [Accepted] DP with PriorityQueue. Time complexity: O(nlog n).
+class Solution {
+    public int scheduleCourse(int[][] courses) {
+        List<int[]> list = new ArrayList<>();
+        for (int[] c: courses) {
+            list.add(c);
+        }
+        
+        // Sort by duration.
+        Collections.sort(list, (a, b) -> Integer.compare(a[1], b[1]));
+        
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> Integer.compare(b, a));
+        
+        int[][] dp = new int[courses.length + 1][2];
+        for (int i = 1; i < dp.length; ++i) {
+            int[] l = list.get(i - 1);
+            if (l[0] + dp[i - 1][1] > l[1]) {
+                dp[i][0] = dp[i - 1][0];
+                dp[i][1] = dp[i - 1][1];
+                if (!pq.isEmpty() && dp[i][1] + l[0] - pq.peek() <= l[1] && l[0] < pq.peek()) {
+                    dp[i][1] += l[0] - pq.poll();
+                    pq.add(l[0]);
+                }
+            } else {
+                pq.add(l[0]);
+                dp[i][0] = 1 + dp[i - 1][0];
+                dp[i][1] = dp[i - 1][1] + l[0];
+            }
+        }
+        return dp[courses.length][0];
+    }
+}
+
+
+// [Limited time exceeded] DP. Time complexity: O(n^2).
+class Solution {
+    public int scheduleCourse(int[][] courses) {
+        List<int[]> list = new ArrayList<>();
+        for (int[] c: courses) {
+            list.add(c);
+        }
+        
+        // Sort by duration.
+        Collections.sort(list, (a, b) -> Integer.compare(a[1], b[1]));
+        
+        int[][] dp = new int[courses.length + 1][2];
+        boolean[] include = new boolean[courses.length];
+        for (int i = 1; i < dp.length; ++i) {
+            int[] l = list.get(i - 1);
+            if (l[0] + dp[i - 1][1] > l[1]) {
+                dp[i][0] = dp[i - 1][0];
+                dp[i][1] = dp[i - 1][1];
+                int max = -1;
+                int idx = -1;
+                for (int j = 0; j < i - 1; ++j) {
+                    if (l[0] < list.get(j)[0] && include[j]) {
+                        if (max < list.get(j)[0]) {
+                            max = list.get(j)[0];
+                            idx = j;
+                        }
+                    }
+                }
+                if (idx != -1) {
+                    dp[i][1] -= max - l[0];
+                    include[idx] = false;
+                    include[i - 1] = true;
+                }
+            } else {
+                include[i - 1] = true;
+                dp[i][0] = 1 + dp[i - 1][0];
+                dp[i][1] = dp[i - 1][1] + l[0];
+            }
+        }
+        System.out.println(Arrays.deepToString(dp));
+        return dp[courses.length][0];
+    }
+}
