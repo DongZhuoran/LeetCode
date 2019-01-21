@@ -35,10 +35,8 @@ class MyHashSet {
         int index = hash(key);
         if (mySet[index] == null) {
             mySet[index] = new TreeSet<>();
-            mySet[index].add(key);
-        } else {
-            mySet[index].add(key);
         }
+        mySet[index].add(key);
     }
     
     public void remove(int key) {
