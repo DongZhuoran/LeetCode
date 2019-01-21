@@ -16,6 +16,7 @@
  * Output: true
  */
  
+// Approach #1: Sort and scan. Time complexity: O(nlog n). Space complexity: O(1).
 class Solution {
     public boolean containsDuplicate(int[] nums) {
         if (nums == null || nums.length == 0) {
@@ -24,6 +25,21 @@ class Solution {
         Arrays.sort(nums);
         for (int i = 1; i < nums.length; ++i) {
             if (nums[i] == nums[i - 1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+// Approach #2: HashSet. Time complexity: O(n). Space complexity: O(n).
+class Solution {
+    public boolean containsDuplicate(int[] nums) {
+        if (nums == null || nums.length == 0) return false;
+        
+        Set<Integer> hs = new HashSet<>();
+        for (int n: nums) {
+            if (!hs.add(n)) {
                 return true;
             }
         }
