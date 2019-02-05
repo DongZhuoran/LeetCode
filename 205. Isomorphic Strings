@@ -1,0 +1,56 @@
+/**
+ * Given two strings s and t, determine if they are isomorphic.
+ *
+ * Two strings are isomorphic if the characters in s can be replaced to get t.
+ *
+ * All occurrences of a character must be replaced with another character while preserving the order of characters. 
+ * No two characters may map to the same character but a character may map to itself.
+ *
+ * Example 1:
+ * Input: s = "egg", t = "add"
+ * Output: true
+ *
+ * Example 2:
+ * Input: s = "foo", t = "bar"
+ * Output: false
+ *
+ * Example 3:
+ * Input: s = "paper", t = "title"
+ * Output: true
+ *
+ * Note:
+ * You may assume both s and t have the same length.
+ */
+
+// Approach #1: hashmap & hashset. Time complexity: O(n).
+class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        Map<Character, Character> replace = new HashMap<>();
+        Set<Character> used = new HashSet<>();
+        for (int i = 0; i < s.length(); ++i) {
+            char ch_s = s.charAt(i);
+            char ch_t = t.charAt(i);
+            if (replace.containsKey(ch_s) && replace.get(ch_s) == ch_t) {
+                continue;
+            } else if (!replace.containsKey(ch_s) && !used.contains(ch_t)) {
+                replace.put(ch_s, ch_t);
+                used.add(ch_t);
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+// Approach #2: Using a intermeidate number as mapping. Time complexity: O(n).
+class Solution {
+    public boolean isIsomorphic(String s1, String s2) {
+        int[] m1 = new int[256], m2 = new int[256];
+        for (int i = 0; i < s1.length(); i++) {
+            if (m1[s1.charAt(i)] != m2[s2.charAt(i)]) return false;
+            m1[s1.charAt(i)] = m2[s2.charAt(i)] = i+1;
+        }
+        return true;
+    }
+}
