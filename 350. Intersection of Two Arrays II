@@ -19,7 +19,7 @@
  * - What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
  */
  
-// Time complexity: O(nlogn)
+// Approach #1: Sort and two-pointer technique. Time complexity: O(nlogn)
 class Solution {
     public int[] intersect(int[] nums1, int[] nums2) {
         if (nums1 == null || nums2 == null) {
@@ -38,6 +38,36 @@ class Solution {
                 j++;
             } else {
                 i++;
+            }
+        }
+        return Arrays.copyOf(nums2, k);
+    }
+}
+
+// Approach #2: HashMap. Time complexity: O(n).
+class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        if (nums1 == null || nums2 == null || nums1.length == 0 || nums2.length == 0) {
+            return new int[0];
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        if (nums1.length > nums2.length) {
+            int[] temp = nums1;
+            nums1 = nums2;
+            nums2 = temp;
+        }
+        for (int n: nums1) {
+            map.put(n, map.getOrDefault(n, 0) + 1);
+        }
+        int k = 0;
+        for (int n: nums2) {
+            if (map.containsKey(n)) {
+                nums2[k++] = n;
+                if (map.get(n) == 1) {
+                    map.remove(n);
+                } else {
+                    map.put(n, map.get(n) - 1);
+                }
             }
         }
         return Arrays.copyOf(nums2, k);
