@@ -36,7 +36,7 @@
  * []
  */
 
-// Approach #1: dfs.
+// Approach #1: dfs + backtracking.
 class Solution {
     public List<String> wordBreak(String s, List<String> wordDict) {
         return dfs(s, new HashMap<>(), new HashSet<>(wordDict));
