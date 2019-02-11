@@ -1,0 +1,53 @@
+/**
+ * Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can
+ * be segmented into a space-separated sequence of one or more dictionary words.
+ *
+ * Note:
+ * The same word in the dictionary may be reused multiple times in the segmentation.
+ * You may assume the dictionary does not contain duplicate words.
+ *
+ * Example 1:
+ * Input: s = "leetcode", wordDict = ["leet", "code"]
+ * Output: true
+ * Explanation: Return true because "leetcode" can be segmented as "leet code".
+ *
+ * Example 2:
+ * Input: s = "applepenapple", wordDict = ["apple", "pen"]
+ * Output: true
+ * Explanation: Return true because "applepenapple" can be segmented as "apple pen apple".
+ *              Note that you are allowed to reuse a dictionary word.
+ *
+ * Example 3:
+ * Input: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+ * Output: false
+ */
+
+// Approach #1: DFS + backtracking.
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        return dfs(s, new HashMap<>(), new HashSet<>(wordDict));
+    }
+    
+    public boolean dfs(String s, Map<String, Boolean> map, Set<String> wordDict) {        
+        if (map.containsKey(s)) {
+            return map.get(s);
+        }
+        
+        if (s.length() == 0) {
+            return true;
+        }
+        
+        boolean res = false;
+        for (String word: wordDict) {
+            if (s.startsWith(word)) {
+                boolean sub = dfs(s.substring(word.length()), map, wordDict);
+                if (sub) {
+                    res = true;
+                    break;
+                }
+            }
+        }
+        map.put(s, res);
+        return res;
+    }
+}
