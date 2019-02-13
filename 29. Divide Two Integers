@@ -1,0 +1,73 @@
+/**
+ * Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
+ *
+ * Return the quotient after dividing dividend by divisor.
+ *
+ * The integer division should truncate toward zero.
+ *
+ * Example 1:
+ * Input: dividend = 10, divisor = 3
+ * Output: 3
+ *
+ * Example 2:
+ * Input: dividend = 7, divisor = -3
+ * Output: -2
+ *
+ * Note:
+ * - Both dividend and divisor will be 32-bit signed integers.
+ * - The divisor will never be 0.
+ * - Assume we are dealing with an environment which could only store integers within the 32-bit signed integer 
+ *   range: [−231,  231 − 1]. For the purpose of this problem, assume that your function returns 231 − 1 when the
+ *   division result overflows.
+ */
+
+// Approach #1: Binary search.
+class Solution {
+    public int divide(int dividend, int divisor) {
+        long divi = (long) dividend;
+        long divis = (long) divisor;
+        if (dividend == 0 || Math.abs(divi) < Math.abs(divis)) {
+            return 0;
+        }
+        if (dividend == divisor) {
+            return 1;
+        }
+        
+        int sign = 1;
+        if ((dividend < 0 && divisor > 0) || (dividend > 0 && divisor < 0)) {
+            sign = -1;
+        }
+        divi = Math.abs(divi);
+        divis = Math.abs(divisor);
+        
+        List<List<Long>> list = new ArrayList<>();
+        long sum = divis;
+        long res = 1;
+        while (sum + sum <= divi) {
+            List<Long> temp = new ArrayList<>();
+            temp.add(res);
+            temp.add(sum);
+            list.add(temp);
+            res += res;
+            sum += sum;
+            if (res * sign > Integer.MAX_VALUE || res * sign < Integer.MIN_VALUE) {
+                return Integer.MAX_VALUE;
+            }
+        }
+        for (int i = list.size() - 1; i >= 0; -- i) {
+            if (sum + list.get(i).get(1) <= divi) {
+                sum += list.get(i).get(1);
+                res += list.get(i).get(0);
+            } 
+            if (res * sign > Integer.MAX_VALUE || res * sign < Integer.MIN_VALUE) {
+                return Integer.MAX_VALUE;
+            }
+        }
+        if (sum + divis <= divi) {
+            sum += divis;
+            res ++;
+        }
+        
+        return (int) res * sign;
+    }
+}
