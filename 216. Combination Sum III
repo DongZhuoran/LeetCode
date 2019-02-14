@@ -1,0 +1,63 @@
+/**
+ * Find all possible combinations of k numbers that add up to a number n, given that only numbers from 1 to 9 can be 
+ * used and each combination should be a unique set of numbers.
+ *
+ * Note:
+ * - All numbers will be positive integers.
+ * - The solution set must not contain duplicate combinations.
+ *
+ * Example 1:
+ * Input: k = 3, n = 7
+ * Output: [[1,2,4]]
+ * 
+ * Example 2:
+ * Input: k = 3, n = 9
+ * Output: [[1,2,6], [1,3,5], [2,3,4]]
+ */
+ 
+class Solution {
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        if (k == 1 && n > 9) {
+            return new ArrayList<>();
+        }
+        if (k == 1 && n < 10) {
+            List<List<Integer>> list = new ArrayList<>();
+            list.add(new ArrayList<>());
+            list.get(0).add(n);
+            return list;
+        }
+        
+        int[] nums = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        return kSum(nums, n, k, 0);
+    }
+    
+    public List<List<Integer>> kSum(int[] nums, int target, int k, int index) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (k == 2) {
+            int i = index, j = nums.length - 1;
+            while (i < j) {
+                if (target - nums[i] == nums[j]) {
+                    List<Integer> temp = new ArrayList<>();
+                    temp.add(nums[i]);
+                    temp.add(nums[j]);
+                    res.add(temp);
+                    i ++;
+                    j --;
+                } else if (target - nums[i] > nums[j]) {
+                    i ++;
+                } else {
+                    j --;
+                }
+            }
+        } else {
+            for (int i = index; i < nums.length - k + 1; ++i) {
+                List<List<Integer>> subRes = kSum(nums, target - nums[i], k - 1, i + 1);
+                for (List<Integer> list: subRes) {
+                    list.add(0, nums[i]);
+                    res.add(list);
+                }
+            }
+        }
+        return res;
+    }
+}
