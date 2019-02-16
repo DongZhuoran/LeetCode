@@ -1,0 +1,41 @@
+/**
+ * Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent.
+ *
+ * A mapping of digit to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
+ * 2 -> abc, 3 -> def, 4 -> ghi, 5 -> jkl, 6 -> mno, 7 -> pqrs, 8 -> tuv, 9 -> wxyz
+ * Example:
+ * Input: "23"
+ * Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+ *
+ * Note:
+ *   Although the above answer is in lexicographical order, your answer could be in any order you want.
+ */
+
+// Approach #1: BFS. Time complexity: O(3^N * 4^M), where N is the number of digits in the input that maps to 3 letters 
+//              (e.g. 2, 3, 4, 5, 6, 8) and M is the number of digits in the input that maps to 4 letters (e.g. 7, 9), and 
+//              N+M is the total number digits in the input.
+class Solution {
+    public List<String> letterCombinations(String digits) {
+        if (digits == null || digits.length() == 0) {
+            return new ArrayList<>();
+        }
+        
+        String[] map = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        List<String> res = new ArrayList<>();
+        bfs(digits, 0, new StringBuilder(), res, map);
+        return res;
+    }
+    
+    public void bfs(String digits, int index, StringBuilder sb, List<String> res, String[] map) {
+        if (index == digits.length()) {
+            res.add(sb.toString());
+            return;
+        }
+        String letters = map[digits.charAt(index) - '2'];
+        for (int i = 0; i < letters.length(); ++i) {
+            sb.append(letters.charAt(i));
+            bfs(digits, index + 1, sb, res, map);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+}
