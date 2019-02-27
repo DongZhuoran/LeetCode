@@ -10,7 +10,7 @@
  * - Could you optimize your algorithm to use only O(k) extra space?
  */
  
-// Space complexity: O(k) 
+// Approach #1: Forward adding. Space complexity: O(k) 
 class Solution {
     public List<Integer> getRow(int rowIndex) {
         List<Integer> ret = new ArrayList<>();
@@ -31,3 +31,28 @@ class Solution {
         return ret;
     }
 }
+
+
+Approach #2: Backward Adding.
+class Solution {
+    public List<Integer> getRow(int rowIndex) {
+        List<Integer> res = new ArrayList<>();
+        res.add(1);
+        if (rowIndex == 0) {
+            return res;
+        }
+        res.add(1);
+        if (rowIndex == 1) {
+            return res;
+        }
+        for (int i = 2; i <= rowIndex; ++i) {
+            res.add(1);
+            int size = res.size();
+            for (int j = size - 2; j > 0; --j) {
+                res.set(j, res.get(j) + res.get(j - 1));
+            }
+        }
+        return res;
+    }
+}
+
