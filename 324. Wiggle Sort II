@@ -1,0 +1,85 @@
+/**
+ * Given an unsorted array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+ *
+ * Example 1:
+ * Input: nums = [1, 5, 1, 1, 6, 4]
+ * Output: One possible answer is [1, 4, 1, 5, 1, 6].
+ *
+ * Example 2:
+ * Input: nums = [1, 3, 2, 2, 3, 1]
+ * Output: One possible answer is [2, 3, 1, 3, 1, 2].
+ *
+ * Note:
+ * You may assume all input has valid answer.
+ *
+ * Follow Up:
+ * Can you do it in O(n) time and/or in-place with O(1) extra space?
+ */
+ 
+// Approach #1: Sort and switch. Time complexity: O(nlogn). Space complexity: O(n).
+class Solution {
+    public void wiggleSort(int[] nums) {
+        if (nums == null || nums.length < 2) {
+            return;
+        }
+        
+        int[] temp = nums;
+        Arrays.sort(temp);
+        int N = nums.length, left = (N + 1) / 2, right = N;
+        for (int i = 0; i < N; ++ i) {
+            nums[i] = nums[i] & 1 ? nums[--right] : nums[--left];
+        }
+    }
+}
+
+// Approach #2: Median and two pointers. Time complexity: can reduce to O(n) when findKthLargest() takes O(n) time.
+class Solution {
+    public void wiggleSort(int[] nums) {
+        if (nums == null || nums.length < 2) {
+            return;
+        }
+        
+        int N = nums.length;
+        int median = findKthLargest(nums, (N + 1) / 2);
+        
+        int i = (N - 1) / 2 * 2, j = i, k = 1;
+        for (int c = 0; c < nums.length; ++ c) {
+            if (nums[j] < median) {
+                swap(nums, i, j);
+                i -= 2;
+                j -= 2;
+            } else if (nums[j] > median) {
+                swap(nums, j, k);
+                k += 2;
+            } else {
+                j -= 2;
+            }
+            
+            if (i < 0 || k > N - 1) {
+                break;
+            }
+            if (j < 0) j = N / 2 * 2 - 1;
+        }
+    }
+    
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+    
+    public int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int num: nums) {
+            if (pq.size() < k) {
+                pq.add(num);
+            } else {
+                if (pq.peek() < num) {
+                    pq.poll();
+                    pq.add(num);
+                }
+            }
+        }
+        return pq.peek();
+    }
+}
