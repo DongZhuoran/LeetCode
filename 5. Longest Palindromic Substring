@@ -11,7 +11,7 @@
  * Output: "bb"
  */
 
-// Time complexity: O(n^2), where n = s.length().
+// Approach #1: Longest common substring. Time complexity: O(n^2), where n = s.length().
 class Solution {
     public String longestPalindrome(String s) {
         if (s == null || s.length() == 0) {
@@ -41,6 +41,39 @@ class Solution {
                     }
                 } else {
                     LCSubStr[i][j] = 0;
+                }
+            }
+        }
+        return res;
+    }
+}
+
+
+// Approach #2: Dynamic programming. Time complexity: O(n^2).
+class Solution {
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        String res = "";
+        int max = 0;
+        for (int i = 0; i < n; ++ i) {
+            for (int j = 0; j <= i; ++ j) {
+                if (i == j) {
+                    dp[i][j] = true;
+                } else if (s.charAt(i) == s.charAt(j)) {
+                    if (i - j == 1) {
+                        dp[i][j] = true;
+                    } else {
+                        dp[i][j] = dp[i - 1][j + 1];
+                    }  
+                }
+                if (dp[i][j] && i - j + 1 > max) {
+                    max = i - j + 1;
+                    res = s.substring(j, i + 1);
                 }
             }
         }
