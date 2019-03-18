@@ -1,0 +1,81 @@
+/**
+ * Given two non-empty binary trees s and t, check whether tree t has exactly the same structure and node values 
+ * with a subtree of s. A subtree of s is a tree consists of a node in s and all of this node's descendants. The 
+ * tree s could also be considered as a subtree of itself.
+ *
+ * Example 1:
+ * Given tree s:
+ *       3
+ *      / \
+ *     4   5
+ *    / \
+ *   1   2
+ * Given tree t:
+ *     4 
+ *    / \
+ *   1   2
+ * Return true, because t has the same structure and node values with a subtree of s.
+ *
+ * Example 2:
+ * Given tree s:
+ *       3
+ *      / \
+ *     4   5
+ *    / \
+ *   1   2
+ *      /
+ *     0
+ * Given tree t:
+ *     4
+ *    / \
+ *   1   2
+ * Return false.
+ */
+ 
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+ 
+// Approach #1: BFS + recursion. Time complexity: O(n).
+class Solution {
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(s);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; ++ i) {
+                TreeNode cur = queue.poll();
+                if (cur.val == t.val && isIdentical(cur, t)) {
+                    return true;
+                }
+                if (cur.left != null) queue.offer(cur.left);
+                if (cur.right != null) queue.offer(cur.right);
+            }
+        }
+        return false;
+    }
+    
+    public boolean isIdentical(TreeNode s, TreeNode t) {
+        if (s == null || t == null) return s == t;
+        return s.val == t.val && isIdentical(s.left, t.left) && isIdentical(s.right, t.right);
+    }
+}
+
+// Approach #2: recursion. Time complexity: O(n). Space complexity: O(1).
+class Solution {
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s == null) return false;
+        return isIdentical(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+    }
+    
+    public boolean isIdentical(TreeNode s, TreeNode t) {
+        if (s == null || t == null) return s == t;
+        return s.val == t.val && isIdentical(s.left, t.left) && isIdentical(s.right, t.right);
+    }
+}
