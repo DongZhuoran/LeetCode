@@ -58,7 +58,7 @@ class Solution {
             int id = n * position[0] + position[1];
             parents[id] = id;
             for (int[] dir: dirs) {
-                int x = position[0] + dir[0], y = position[y] + dir[y];
+                int x = position[0] + dir[0], y = position[1] + dir[1];
                 int cur_id = n * x + y;
                 if (x < 0 || x == m || y < 0 || y == n || parents[cur_id] == -1) {
                     continue;
