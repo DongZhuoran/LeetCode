@@ -1,0 +1,39 @@
+/**
+ * Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+ * 
+ * For example, given n = 3, a solution set is:
+ * [
+ *   "((()))",
+ *   "(()())",
+ *   "(())()",
+ *   "()(())",
+ *   "()()()"
+ * ]
+ */
+ 
+// Approach #1: Backtracking. Time complexity: O(2^n).
+class Solution {
+    public List<String> generateParenthesis(int n) {
+        if (n <= 0) return new ArrayList<>();
+        
+        List<String> res = new ArrayList<>();
+        backtracking(res, new StringBuilder(), 0, 0, n);
+        return res;
+    }
+    
+    public void backtracking(List<String> res, StringBuilder cur, int op, int cp, int n) {
+        if (op == n && cp == n) {
+            res.add(cur.toString());
+            return;
+        }
+        for (int i = op; i < n; ++ i) {
+            cur.append('(');
+            StringBuilder temp = new StringBuilder(cur);
+            for (int j = cp; j <= i; ++ j) {
+                cur.append(')');
+                backtracking(res, new StringBuilder(cur), i + 1, j + 1, n);
+            }
+            cur = temp;
+        }
+    }
+}
