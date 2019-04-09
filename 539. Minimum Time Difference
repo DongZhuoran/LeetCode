@@ -1,0 +1,41 @@
+/**
+ * Given a list of 24-hour clock time points in "Hour:Minutes" format, find the minimum minutes difference between any
+ * two time points in the list.
+ *
+ * Example 1:
+ * Input: ["23:59","00:00"]
+ * Output: 1
+ *
+ * Note:
+ * The number of time points in the given list is at least 2 and won't exceed 20000.
+ * The input time is legal and ranges from 00:00 to 23:59.
+ */
+ 
+// Approach #1: Time complexity: O(n).
+class Solution {
+    public int findMinDifference(List<String> timePoints) {
+        int dayInMinutes = 24 * 60;
+        boolean[] points = new boolean[dayInMinutes];
+        for (String s: timePoints) {
+            String[] point = s.split(":");
+            int pos = Integer.valueOf(point[0]) * 60 + Integer.valueOf(point[1]);
+            if (points[pos]) return 0;
+            points[pos] = true;
+        }
+        
+        int min = Integer.MAX_VALUE;
+        int prev = -1;
+        int first = Integer.MAX_VALUE, last = -1;
+        for (int i = 0; i < points.length; ++ i) {
+            if (points[i]) {
+                if (prev != -1) {
+                    min = Math.min(min, i - prev);
+                }
+                prev = i;
+                first = Math.min(first, i);
+                last = Math.max(last, i);
+            }
+        }
+        return Math.min(min, dayInMinutes - last + first);
+    }
+}
