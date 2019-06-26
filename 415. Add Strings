@@ -1,0 +1,56 @@
+/**
+ * Given two non-negative integers num1 and num2 represented as strings, return the product of num1 
+ * and num2, also represented as a string.
+ *
+ * Example 1:
+ * Input: num1 = "2", num2 = "3"
+ * Output: "6"
+ *
+ * Example 2:
+ * Input: num1 = "123", num2 = "456"
+ * Output: "56088"
+ *
+ * Note:
+ *   The length of both num1 and num2 is < 110.
+ *   Both num1 and num2 contain only digits 0-9.
+ *   Both num1 and num2 do not contain any leading zero, except the number 0 itself.
+ *   You must not use any built-in BigInteger library or convert the inputs to integer directly.
+ */
+ 
+// Approach #1: Time complexity: O(n).
+class Solution {
+    public String addStrings(String num1, String num2) {
+        int n = num1.length(), m = num2.length();
+        if (n == 0) return num2;
+        if (m == 0) return num1;
+        
+        int[] sum = new int[1 + (n > m ? n : m)];
+        char[] n1 = num1.toCharArray();
+        char[] n2 = num2.toCharArray();
+        
+        int carry = 0;
+        int p1 = n - 1, p2 = m - 1, p3 = 0;
+        while (p1 >= 0 || p2 >= 0) {
+            int tmp = carry;
+            if (p1 >= 0) {
+                tmp += n1[p1] - '0';
+                p1 --;
+            }
+            if (p2 >= 0) {
+                tmp += n2[p2] - '0';
+                p2 --;
+            }
+            sum[p3] = tmp % 10;
+            carry = tmp / 10;
+            p3 ++;
+        }
+        if (carry != 0) sum[p3] = carry;
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = sum.length - 1; i >= 0; -- i) {
+            if (sum[i] == 0 && i == sum.length - 1) continue;
+            sb.append(sum[i]);
+        }
+        return sb.toString();
+    }
+}
