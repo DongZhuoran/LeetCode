@@ -43,18 +43,15 @@
 // Inorder traversal. Time complexity: O(n).
 class Solution {
     public int kthSmallest(TreeNode root, int k) {
-        List<Integer> list = inorderTraversal(root);
+        List<Integer> list = new ArrayList<>();
+        inorderTraversal(root, list);
         return list.get(k - 1);
     }
     
-    private List<Integer> inorderTraversal(TreeNode root) {
-        if (root == null) {
-            return new ArrayList<>();
-        }
-        
-        List<Integer> list = inorderTraversal(root.left);
+    private void inorderTraversal(TreeNode root, List<Integer> list) {
+        if (root == null) return;
+        inorderTraversal(root.left, list);
         list.add(root.val);
-        list.addAll(inorderTraversal(root.right));
-        return list;
+        inorderTraversal(root.right, list);
     }
 }
