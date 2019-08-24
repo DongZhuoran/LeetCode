@@ -24,26 +24,23 @@
  
 // Time complexity: O(nlog n), where sort costs O(nlog n).
 class Solution {
-    public List<Interval> merge(List<Interval> intervals) {
-        if (intervals.size() == 0) return intervals;
-        Collections.sort(intervals, new Comparator<Interval>() {
-            @Override
-            public int compare(Interval i1, Interval i2) {
-                return i1.start - i2.start;
-            }
+    public int[][] merge(int[][] intervals) {
+        if (intervals == null || intervals.length < 2) return intervals;
+        Arrays.sort(intervals, new Comparator<int[]>() {
+           public int compare(int[] i1, int[] i2) {
+               return i1[0] - i2[0];
+           } 
         });
         
-        List<Interval> res = new ArrayList<>();
-        for (int i = 0; i < intervals.size(); ++i) {
-            int k = i + 1;
-            Interval cur = intervals.get(i);
-            while (k < intervals.size() && cur.end >= intervals.get(k).start) {
-                cur.end = Math.max(cur.end, intervals.get(k).end);
-                k++;
+        List<int[]> res = new ArrayList<>();
+        for (int i = 0; i < intervals.length; ++ i) {
+            int[] cur = intervals[i];
+            while (i < intervals.length - 1 && cur[1] >= intervals[i + 1][0]) {
+                cur[1] = Math.max(cur[1], intervals[i + 1][1]);
+                i ++;
             }
             res.add(cur);
-            i = k - 1;
         }
-        return res;
+        return res.toArray(new int[res.size()][]);
     }
 }
