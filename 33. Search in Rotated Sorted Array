@@ -14,72 +14,19 @@
  * Output: -1
  */
  
- // Time complexity: O(log n)
- class Solution {
+// Time complexity: O(log n)
+class Solution {
     public int search(int[] nums, int target) {
         if (nums == null || nums.length == 0) {
             return -1;
         }
-        int left = 0, right = nums.length - 1;
-        int pivot = getPivot(nums, 0, nums.length - 1);
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            int realMid = (mid + pivot) % nums.length;
-            if (nums[realMid] == target) {
-                return realMid;
-            } else if (nums[realMid] < target) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
-        }
-        return -1;
-    }
-    
-    public int getPivot(int[] nums, int start, int end) {
-        if (start > end) {
-            return 0;
-        }
-        int pivot = start + (end - start) / 2;
-        if (pivot - 1 >= start && nums[pivot] < nums[pivot - 1]) {
-            return pivot;
-        } else if (pivot + 1 <= end && nums[pivot] > nums[pivot + 1]) {
-            return pivot + 1;
-        } else {
-            return Math.max(getPivot(nums, start, pivot - 1), getPivot(nums, pivot + 1, end));
-        }
-    }
-}
- 
- // Time complexity: O(n)
- class Solution {
-    public int search(int[] nums, int target) {
-        if (nums == null || nums.length == 0) {
-            return -1;
-        }
-        int left = 0, right = nums.length - 1;
-        int pivot = getPivot(nums, 0, nums.length - 1);
-        if (pivot != 0) {
-            int[] front = Arrays.copyOfRange(nums, 0, pivot);
-            int[] back = Arrays.copyOfRange(nums, pivot, nums.length);
-            int k = 0;
-            while (k < back.length) {
-                nums[k] = back[k];
-                k++;
-            }
-            while (k - back.length < front.length) {
-                nums[k] = front[k - back.length];
-                k++;
-            }
-        }
+        int pivot = getPivot(nums);
+        int left = target <= nums[nums.length - 1] ? pivot : 0;
+        int right = target <= nums[nums.length - 1] ? nums.length - 1 : pivot - 1;
         while (left <= right) {
             int mid = left + (right - left) / 2;
             if (nums[mid] == target) {
-                if (mid >= nums.length - pivot) {
-                    return mid - nums.length + pivot;
-                } else {
-                    return mid + pivot;
-                }
+                return mid;
             } else if (nums[mid] < target) {
                 left = mid + 1;
             } else {
@@ -89,17 +36,18 @@
         return -1;
     }
     
-    public int getPivot(int[] nums, int start, int end) {
-        if (start > end) {
-            return 0;
+    public int getPivot(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < nums[left]) {
+                right = mid;
+            } else if (nums[mid] > nums[right]){
+                left = mid + 1;
+            } else {
+                return left;
+            }
         }
-        int pivot = start + (end - start) / 2;
-        if (pivot - 1 >= start && nums[pivot] < nums[pivot - 1]) {
-            return pivot;
-        } else if (pivot + 1 <= end && nums[pivot] > nums[pivot + 1]) {
-            return pivot + 1;
-        } else {
-            return Math.max(getPivot(nums, start, pivot - 1), getPivot(nums, pivot + 1, end));
-        }
+        return left;
     }
 }
