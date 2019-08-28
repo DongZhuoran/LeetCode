@@ -24,26 +24,23 @@
 // Approach #1: Binary search.
 class Solution {
     public int divide(int dividend, int divisor) {
-        long divi = (long) dividend;
+        long divid = (long) dividend;
         long divis = (long) divisor;
-        if (dividend == 0 || Math.abs(divi) < Math.abs(divis)) {
+        if (dividend == 0 || Math.abs(divid) < Math.abs(divis)) {
             return 0;
-        }
-        if (dividend == divisor) {
-            return 1;
         }
         
         int sign = 1;
         if ((dividend < 0 && divisor > 0) || (dividend > 0 && divisor < 0)) {
             sign = -1;
         }
-        divi = Math.abs(divi);
-        divis = Math.abs(divisor);
+        divid = Math.abs(divid);
+        divis = Math.abs(divis);
         
         List<List<Long>> list = new ArrayList<>();
-        long sum = divis;
         long res = 1;
-        while (sum + sum <= divi) {
+        long sum = divis;
+        while (sum + sum <= divid) {
             List<Long> temp = new ArrayList<>();
             temp.add(res);
             temp.add(sum);
@@ -55,17 +52,13 @@ class Solution {
             }
         }
         for (int i = list.size() - 1; i >= 0; -- i) {
-            if (sum + list.get(i).get(1) <= divi) {
+            if (sum + list.get(i).get(1) <= divid) {
                 sum += list.get(i).get(1);
                 res += list.get(i).get(0);
             } 
             if (res * sign > Integer.MAX_VALUE || res * sign < Integer.MIN_VALUE) {
                 return Integer.MAX_VALUE;
             }
-        }
-        if (sum + divis <= divi) {
-            sum += divis;
-            res ++;
         }
         
         return (int) res * sign;
