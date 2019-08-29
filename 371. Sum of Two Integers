@@ -1,0 +1,29 @@
+/**
+ * Calculate the sum of two integers a and b, but you are not allowed to use the operator + and -.
+ *
+ * Example 1:
+ * Input: a = 1, b = 2
+ * Output: 3
+ *
+ * Example 2:
+ * Input: a = -2, b = 3
+ * Output: 1
+ */
+ 
+// Approach #1:
+class Solution {
+    public int getSum(int a, int b) {
+        // 转换成没进位的部分+进位的部分
+        if(b == 0){
+            // 如果没进位了就直接回传没进位的部分
+            return a;
+        }
+        // a^b 用XOR取得没进位的值
+        // a&b 用AND取得carry的值, 因为是进位必须左移一位
+        return getSum(a^b,(a&b)<<1);
+        // 以十进制的概念來看
+        // 39+75 
+        // => 04(没进位的部分) + 110(个位数十位数都有进位所以carry都是1, 最后因为进位左移一个)
+        // answer = 114
+    }
+}
