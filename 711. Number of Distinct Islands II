@@ -82,21 +82,21 @@ class Solution {
     }
     
     public String normalize(List<Integer> island, int m, int n) {
-        int[][] islands = new int[8][island.length];
+        int[][] islands = new int[8][island.size()];
         String ret = "";
-        int[] mx = new int[island.length], my = new int[island.length];
+        int[] mx = new int[island.size()], my = new int[island.size()];
         Arrays.fill(mx, Integer.MAX_VALUE);
         Arrays.fill(my, Integer.MAX_VALUE);
-        for (int i = 0; i < island.length; ++i) {
-            int x = island[i] / n, y = island[i] % n;
-            islands[0] = x * n + y;
-            islands[1] = x * n - y;
-            islands[2] = -x * n + y;
-            islands[3] = -x * n - y;
-            islands[4] = y * n + x;
-            islands[5] = y * n - x;
-            islands[6] = -y * n + x;
-            islands[7] = -y * n - x;
+        for (int i = 0; i < island.size(); ++i) {
+            int x = island.get(i) / n, y = island.get(i) % n;
+            islands[0][i] = x * n + y;
+            islands[1][i] = x * n - y;
+            islands[2][i] = -x * n + y;
+            islands[3][i] = -x * n - y;
+            islands[4][i] = y * n + x;
+            islands[5][i] = y * n - x;
+            islands[6][i] = -y * n + x;
+            islands[7][i] = -y * n - x;
             mx[0] = Math.min(mx[0], x), my[0] = Math.min(my[0], y);
             mx[1] = Math.min(mx[1], x), my[1] = Math.min(my[1], -y);
             mx[2] = Math.min(mx[2], -x), my[2] = Math.min(my[2], y);
@@ -107,7 +107,7 @@ class Solution {
             mx[7] = Math.min(mx[7], -y), my[7] = Math.min(my[7], -x);
         }
         for (int i = 0; i < 8; ++i) {
-            for (int j = 0; j < island.length; ++j) {
+            for (int j = 0; j < island.size(); ++j) {
                 islands[i][j] -= (mx[i] * n + my[i]);
             }
             Arrays.sort(islands[i]);
