@@ -1,0 +1,40 @@
+/**
+ * Given an array of numbers, verify whether it is the correct preorder traversal 
+ * sequence of a binary search tree.
+ *
+ * You may assume each number in the sequence is unique.
+ *
+ * Follow up:
+ * Could you do it using only constant space complexity?
+ */
+ 
+// Apporach #1: Stack. Time/Space complexity: O(n).
+class Solution {
+    public boolean verifyPreorder(int[] preorder) {
+        Stack<Integer> stack = new Stack<>();
+        int min = Integer.MIN_VALUE;
+        for (int n: preorder) {
+            if (n > min) return false;
+            
+            while(!stack.empty() && n > stack.peek()) {
+                min = stack.pop();
+            }
+            stack.push(n);
+        }
+        return true;
+    }
+}
+
+// Approach #2: Using preorder array as stack. Space complexity: O(1).
+class Solution {
+    public boolean verifyPreorder(int[] preorder) {
+        int min = Integer.MIN_VALUE, i = -1;
+        for (int n: preorder) {
+            if (n < min) return false;
+            
+            while(i >= 0 && n > preorder[i]) min = preorder[i--];
+            preorder[++i] = n;
+        }
+        return true;
+    }
+}
