@@ -10,7 +10,7 @@
  * an integer in the range [30, 100].
  */
  
- // Dynamic programming
+ // Approach #1: Dynamic programming
  class Solution {
     public int[] dailyTemperatures(int[] temperatures) {
         int[] predictions = new int[temperatures.length];
@@ -27,5 +27,21 @@
             predictions[i] = count;
         }
         return predictions;
+    }
+}
+
+// Approach #2: Stack.
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        Stack<Integer> stack = new Stack<>();
+        int[] res = new int[temperatures.length];
+        for (int i = 0; i < temperatures.length; ++ i) {
+            while (!stack.empty() && temperatures[i] > temperatures[stack.peek()]) {
+                int idx = stack.pop();
+                res[idx] = i - idx;
+            }
+            stack.push(i);
+        }
+        return res;
     }
 }
