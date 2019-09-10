@@ -31,25 +31,37 @@
  *  4-> 5 -> 7 -> NULL
  */
  
-/**
- * Definition for binary tree with next pointer.
- * public class TreeLinkNode {
- *     int val;
- *     TreeLinkNode left, right, next;
- *     TreeLinkNode(int x) { val = x; }
- * }
- */
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+    public Node next;
+
+    public Node() {}
+
+    public Node(int _val,Node _left,Node _right,Node _next) {
+        val = _val;
+        left = _left;
+        right = _right;
+        next = _next;
+    }
+};
+*/
+
+// Approach #1: Queue. Space complexity: O(n).
 public class Solution {
-    public void connect(TreeLinkNode root) {
+    public Node connect(Node root) {
         if (root == null) {
             return;
         }
-        Queue<TreeLinkNode> queue = new LinkedList<>();
+        Queue<Node> queue = new LinkedList<>();
         queue.offer(root);
         while (!queue.isEmpty()) {
             int size = queue.size();
             for (int i = 0; i < size; ++i) {
-                TreeLinkNode curNode = queue.poll();
+                Node curNode = queue.poll();
                 if (i + 1 < size) {
                     curNode.next = queue.peek();
                 }
@@ -61,5 +73,33 @@ public class Solution {
                 }
             }
         }
+        return root;
+    }
+}
+
+// Approach #2: BFS. Space complexity: O(1).
+class Solution {
+    public Node connect(Node root) {
+        if (root == null) return root;
+        
+        Node dummy = new Node();
+        Node itr = null;
+        Node cur = root;
+        while (itr != dummy) {
+            if (cur == null) cur = dummy.next;
+            itr = dummy;
+            while (cur != null) {
+                if (cur.left != null) {
+                    itr.next = cur.left;
+                    itr = itr.next;
+                }
+                if (cur.right != null) {
+                    itr.next = cur.right;
+                    itr = itr.next;
+                }
+                cur = cur.next;
+            }
+        }
+        return root;
     }
 }
