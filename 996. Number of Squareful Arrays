@@ -1,0 +1,118 @@
+/**
+ * Given an array A of non-negative integers, the array is squareful if for every pair of 
+ * adjacent elements, their sum is a perfect square.
+ *
+ * Return the number of permutations of A that are squareful.  Two permutations A1 and A2 
+ * differ if and only if there is some index i such that A1[i] != A2[i].
+ *
+ * Example 1:
+ * Input: [1,17,8]
+ * Output: 2
+ * Explanation: 
+ * [1,8,17] and [17,8,1] are the valid permutations.
+ *
+ * Example 2:
+ * Input: [2,2,2]
+ * Output: 1
+ *
+ * Note:
+ * 1 <= A.length <= 12
+ * 0 <= A[i] <= 1e9
+ */
+ 
+// Approach #1: Backtracking. Time->O(n^n).
+class Solution {
+    Map<Integer, Integer> count;
+    Map<Integer, List<Integer>> graph;
+    public int numSquarefulPerms(int[] A) {
+        int N = A.length;
+        count = new HashMap<>();
+        graph = new HashMap<>();
+        for (int n: A) count.put(n, count.getOrDefault(n, 0) + 1);
+        
+        for (int n: count.keySet()) graph.put(n, new ArrayList<>());
+        
+        for (int x: count.keySet()) {
+            for (int y: count.keySet()) {
+                int r = (int) Math.sqrt(x + y);
+                if (r * r == x + y) graph.get(x).add(y);    
+            }
+        }
+        
+        int res = 0;
+        for (int x: count.keySet()) {
+            res += dfs(x, N - 1);
+        }
+        return res;
+    }
+    
+    public int dfs(int x, int todo) {
+        count.put(x, count.get(x) - 1);
+        int res = 1;
+        if (todo != 0) {
+            res = 0;
+            for (int y: graph.get(x)) {
+                if (count.get(y) != 0) res += dfs(y, todo - 1);
+            }
+        }
+        count.put(x, count.get(x) + 1);
+        return res;
+    }
+}
+
+// Approach #2: DP...
+class Solution {
+    int N;
+    Map<Integer, List<Integer>> graph;
+    Integer[][] memo;
+
+    public int numSquarefulPerms(int[] A) {
+        N = A.length;
+        graph = new HashMap();
+        memo = new Integer[N][1 << N];
+
+        for (int i = 0; i < N; ++i)
+            graph.put(i, new ArrayList());
+
+        for (int i = 0; i < N; ++i)
+            for (int j = i+1; j < N; ++j) {
+                int r = (int) (Math.sqrt(A[i] + A[j]) + 0.5);
+                if (r * r == A[i] + A[j]) {
+                    graph.get(i).add(j);
+                    graph.get(j).add(i);
+                }
+            }
+
+
+        int[] factorial = new int[20];
+        factorial[0] = 1;
+        for (int i = 1; i < 20; ++i)
+            factorial[i] = i * factorial[i-1];
+
+        int ans = 0;
+        for (int i = 0; i < N; ++i)
+            ans += dfs(i, 1 << i);
+
+        Map<Integer, Integer> count = new HashMap();
+        for (int x: A)
+            count.put(x, count.getOrDefault(x, 0) + 1);
+        for (int v: count.values())
+            ans /= factorial[v];
+
+        return ans;
+    }
+
+    public int dfs(int node, int visited) {
+        if (visited == (1 << N) - 1)
+            return 1;
+        if (memo[node][visited] != null)
+            return memo[node][visited];
+
+        int ans = 0;
+        for (int nei: graph.get(node))
+            if (((visited >> nei) & 1) == 0)
+                ans += dfs(nei, visited | (1 << nei));
+        memo[node][visited] = ans;
+        return ans;
+    }
+}
