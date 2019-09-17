@@ -1,0 +1,56 @@
+/**
+ * Given an array nums, we call (i, j) an important reverse pair if i < j and nums[i] > 2*nums[j].
+ *
+ * You need to return the number of important reverse pairs in the given array.
+ * 
+ * Example1:
+ * Input: [1,3,2,3,1]
+ * Output: 2
+ *
+ * Example2:
+ * Input: [2,4,3,5,1]
+ * Output: 3
+ *
+ * Note:
+ * The length of the given array will not exceed 50,000.
+ * All the numbers in the input array are in the range of 32-bit integer.
+ */
+ 
+// Approach #1: Divide and conquer. Time->O(nlogn).
+class Solution {
+    public int reversePairs(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+        return mergeAndFind(nums, 0, nums.length - 1);
+    }
+    
+    public int mergeAndFind(int[] nums, int left, int right) {
+        if (left >= right) return 0;
+        int mid = left + (right - left) / 2;
+        int count = mergeAndFind(nums, left, mid) + mergeAndFind(nums, mid + 1, right);
+        for (int i = left, m = mid + 1; i <= mid; ++ i) {
+            while (m <= right && nums[i] > (long) 2 * nums[m]) m ++;
+            count += m - mid - 1;
+        }
+        merge(nums, left, mid, right);
+        return count;
+    }
+    
+    public void merge(int[] nums, int left, int mid, int right) {
+        int[] leftArr = new int[mid - left + 1];
+        int[] rightArr = new int[right - mid];
+        for (int i = left; i <= mid; ++ i) leftArr[i - left] = nums[i];
+        for (int i = mid + 1; i <= right; ++ i) rightArr[i - mid - 1] = nums[i];
+        
+        int p1 = 0, p2 = 0;
+        for (int i = left; i <= right; ++ i) {
+            if (p1 < leftArr.length && p2 < rightArr.length) {
+                if (leftArr[p1] <= rightArr[p2]) nums[i] = leftArr[p1++];
+                else nums[i] = rightArr[p2++];
+            } else if (p1 < leftArr.length) {
+                nums[i] = leftArr[p1++];
+            } else {
+                nums[i] = rightArr[p2++];
+            }
+        }
+    }
+}
