@@ -1,0 +1,86 @@
+/**
+ * Given an integer array nums, return the number of range sums that lie in [lower, upper] 
+ * inclusive.
+ * Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j
+ * (i ≤ j), inclusive.
+ *
+ * Note:
+ * A naive algorithm of O(n2) is trivial. You MUST do better than that.
+ *
+ * Example:
+ * Input: nums = [-2,5,-1], lower = -2, upper = 2,
+ * Output: 3 
+ * Explanation: The three ranges are : [0,0], [2,2], [0,2] and their respective sums are: 
+ * -2, -1, 2.
+ */
+ 
+// Approach #1: TreeMap. 
+class Solution {
+    // Approach #1: TreeMap. Time->O(n^2).
+    public int countRangeSum(int[] nums, int lower, int upper) {
+        if (nums == null || nums.length == 0) return 0;
+        TreeMap<Long, Integer> map = new TreeMap<>();
+        map.put((long) 0, 1);
+        long sum = 0;
+        int count = 0;
+        for (int num: nums) {
+            sum += num;
+            long lowerBound = sum - upper;
+            long upperBound = sum - lower;
+            Map<Long, Integer> sub = map.subMap(lowerBound, true, upperBound, true);
+            for (int v: sub.values()) {
+                count += v;
+            }
+            map.put(sum, map.getOrDefault(sum, 0) + 1);
+        }
+        return count;
+    }
+}
+ 
+// Approach #2: Divide and conquer. Time->O(nlogn).
+class Solution {
+    public int countRangeSum(int[] nums, int lower, int upper) {
+        long[] preSum = new long[nums.length + 1];
+        for (int i = 0; i < nums.length; ++ i) {
+            preSum[i + 1] = preSum[i] + nums[i];
+        }
+        return mergeAndCount(preSum, lower, upper, 0, nums.length);
+    }
+    
+    public int mergeAndCount(long[] nums, int lower, int upper, int left, int right) {
+        if (left >= right) return 0;
+        int count = 0;
+        int mid = left + (right - left) / 2;
+        count += mergeAndCount(nums, lower, upper, left, mid) + mergeAndCount(nums, lower, upper, mid + 1, right);
+        for (int i = left, m = mid + 1, n = mid + 1; i <= mid; ++ i) {
+            while (m <= right && nums[m] - nums[i] < lower) m ++;
+            while (n <= right && nums[n] - nums[i] <= upper) n ++;
+            count += n - m;
+        }
+        merge(nums, left, mid, right);
+        return count;
+    }
+    
+    public void merge(long[] nums, int left, int mid, int right) {
+        long[] leftArr = new long[mid - left + 1];
+        long[] rightArr = new long[right - mid];
+        for (int i = left; i <= mid; ++ i) leftArr[i - left] = nums[i];
+        for (int i = mid + 1; i <= right; ++ i) rightArr[i - mid - 1] = nums[i];
+        
+        int p1 = 0, p2 = 0, p3 = left;
+        while (p1 < leftArr.length || p2 < rightArr.length) {
+            if (p1 < leftArr.length && p2 < rightArr.length) {
+                if (leftArr[p1] < rightArr[p2]) {
+                    nums[p3++] = leftArr[p1++];
+                } else {
+                    nums[p3++] = rightArr[p2++];
+                }
+            } else {
+                if (p1 < leftArr.length) 
+                    nums[p3++] = leftArr[p1++];
+                else 
+                    nums[p3++] = rightArr[p2++];
+            }
+        }
+    }
+}
