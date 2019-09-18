@@ -1,0 +1,78 @@
+/**
+ * Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle 
+ * containing only 1's and return its area.
+ *
+ * Example:
+ * Input:
+ * [
+ *   ["1","0","1","0","0"],
+ *   ["1","0","1","1","1"],
+ *   ["1","1","1","1","1"],
+ *   ["1","0","0","1","0"]
+ * ]
+ * Output: 6
+ */
+ 
+// Approach #1: DP. Time->O(mmn).
+// dp[i][j] := max length of all 1 sequence ends with col j, at the i-th row.
+// transition:
+// dp[i][j] = 0 if matrix[i][j] == ‘0’
+//          = dp[i][j-1] + 1 if matrix[i][j] == ‘1’
+class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix == null || matrix.length == 0) return 0;
+        
+        int m = matrix.length, n = matrix[0].length;
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; ++ i) {
+            dp[i][0] = matrix[i][0] == '0' ? 0 : 1;
+            for (int j = 1; j < n; ++ j) {
+                dp[i][j] = matrix[i][j] == '0' ? 0 : dp[i][j - 1] + 1;
+            }
+        }
+        
+        int res = 0;
+        for (int i = 0; i < m; ++ i) {
+            for (int j = 0; j < n; ++ j) {
+                int len = Integer.MAX_VALUE;
+                for (int k = i; k < m; ++ k) {
+                    len = Math.min(len, dp[k][j]);
+                    res = Math.max(res, len * (k - i + 1));
+                }
+            }
+        }
+        return res;
+    }
+}
+
+// Approach #2: Idea from lc84. largestRectangleArea. Time->O(mn).
+class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix == null || matrix.length == 0) return 0;
+        
+        int m = matrix.length, n = matrix[0].length;
+        int res = 0;
+        int[] heights = new int[n];
+        for (int i = 0; i < m; ++ i) {
+            for (int j = 0; j < n; ++ j) {
+                heights[j] = matrix[i][j] == '0' ? 0 : heights[j] + 1;
+            }
+            res = Math.max(res, largestRectangleArea(heights));
+        }
+        return res;
+    }
+    
+    public int largestRectangleArea(int[] heights) {
+        int res = 0;
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i <= heights.length; ++ i) {
+            int h = i == heights.length ? 0 : heights[i];
+            while (!stack.empty() && heights[stack.peek()] >= h) {
+                int cur = heights[stack.pop()];
+                res = Math.max(res, cur * (stack.empty() ? i : i - stack.peek() - 1));
+            }
+            stack.push(i);
+        }
+        return res;
+    }
+}
