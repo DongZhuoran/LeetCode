@@ -1,0 +1,63 @@
+/**
+ * Given an array nums of n integers where n > 1,  return an array output such that 
+ * output[i] is equal to the product of all the elements of nums except nums[i].
+ *
+ * Example:
+ * Input:  [1,2,3,4]
+ * Output: [24,12,8,6]
+ * Note: Please solve it without division and in O(n).
+ *
+ * Follow up:
+ * Could you solve it with constant space complexity? (The output array does not count 
+ * as extra space for the purpose of space complexity analysis.)
+ */
+ 
+// Approach #1: Left and Right product lists. Time/Space -> O(n).
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int N = nums.length;
+        
+        int[] left = new int[N];
+        int[] right = new int[N];
+        
+        int[] res = new int[N];
+        
+        left[0] = 1;
+        for (int i = 1; i < N; ++ i) {
+            left[i] = left[i - 1] * nums[i - 1];
+        }
+        
+        right[N - 1] = 1;
+        for (int i = N - 2; i >= 0; -- i) {
+            right[i] = right[i + 1] * nums[i + 1];
+        }
+        
+        for (int i = 0; i < N; ++ i) {
+            res[i] = left[i] * right[i];
+        }
+        
+        return res;
+    }
+}
+
+// Approach #2: O(1) space approach.
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int N = nums.length;
+        
+        int[] res = new int[N];
+        
+        res[0] = 1;
+        for (int i = 1; i < N; ++ i) {
+            res[i] = res[i - 1] * nums[i - 1];
+        }
+        
+        int right = 1;
+        for (int i = N - 1; i >= 0; -- i) {
+            res[i] = res[i] * right;
+            right *= nums[i];
+        }
+        
+        return res;
+    }
+}
