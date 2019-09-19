@@ -1,0 +1,96 @@
+/**
+ * From: https://leetcode.com/problems/find-all-anagrams-in-a-string/
+ *
+ * Given a string s and a non-empty string p, find all the start indices of p's 
+ * anagrams in s.
+ *
+ * Strings consists of lowercase English letters only and the length of both strings s and p 
+ * will not be larger than 20,100.
+ *
+ * The order of output does not matter.
+ *
+ * Example 1:
+ * Input:
+ * s: "cbaebabacd" p: "abc"
+ * Output:
+ * [0, 6]
+ *
+ * Explanation:
+ * The substring with start index = 0 is "cba", which is an anagram of "abc".
+ * The substring with start index = 6 is "bac", which is an anagram of "abc".
+ *
+ * Example 2:
+ * Input:
+ * s: "abab" p: "ab"
+ * Output:
+ * [0, 1, 2]
+ *
+ * Explanation:
+ * The substring with start index = 0 is "ab", which is an anagram of "ab".
+ * The substring with start index = 1 is "ba", which is an anagram of "ab".
+ * The substring with start index = 2 is "ab", which is an anagram of "ab".
+ */
+ 
+// Approach #1: String sort. [Time Exceeded]
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> res = new ArrayList<>();
+        
+        if (p.length() > s.length()) return res;
+        
+        p = sort(p);
+        int K = p.length();
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); ++ i) {
+            sb.append(s.charAt(i));
+            if (sb.length() == K) {
+                if (sort(sb.toString()).equals(p)) {
+                    res.add(i - K + 1);
+                }
+                sb.deleteCharAt(0);
+            }
+        }
+        return res;
+    }
+    
+    public String sort(String s) {
+        char[] arr = s.toCharArray();
+        Arrays.sort(arr);
+        return new String(arr);
+    }
+}
+
+// Approach #2: Sliding window.
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> res = new ArrayList<>();
+        
+        if (p.length() > s.length()) return res;
+        
+        Map<Character, Integer> dict = new HashMap<>();
+        for (char c: p.toCharArray()) dict.put(c, dict.getOrDefault(c, 0) + 1);
+        
+        int counter = dict.size();
+        int left = 0, right = 0;
+        while (right < s.length()) {
+            char cur = s.charAt(right);
+            if (dict.containsKey(cur)) {
+                dict.put(cur, dict.get(cur) - 1);
+                if (dict.get(cur) == 0) counter --;
+            }
+            right ++;
+            
+            while (counter == 0) {
+                cur = s.charAt(left);
+                if (dict.containsKey(cur)) {
+                    dict.put(cur, dict.get(cur) + 1);
+                    if (dict.get(cur) > 0) counter ++;
+                }
+                if (right - left == p.length()) res.add(left);
+                left ++;
+            }
+        }
+        return res;
+    }
+}
