@@ -1,0 +1,49 @@
+/**
+ * Given a string S, return the number of substrings of length K with no repeated 
+ * characters.
+ *
+ * Example 1:
+ * Input: S = "havefunonleetcode", K = 5
+ * Output: 6
+ * Explanation: 
+ * There are 6 substrings they are : 'havef','avefu','vefun','efuno','etcod','tcode'.
+ * 
+ * Example 2:
+ * Input: S = "home", K = 5
+ * Output: 0
+ * Explanation: 
+ * Notice K can be larger than the length of S. In this case is not possible to find any substring.
+ *
+ * Note:
+ * 1 <= S.length <= 10^4
+ * All characters of S are lowercase English letters.
+ * 1 <= K <= 10^4 */
+
+// Approach #1: Sliding window. Time: O(n).
+class Solution {
+    public int numKLenSubstrNoRepeats(String s, int K) {
+        if (s.length() < K || K > 26) return 0;
+
+        int res = 0;
+        int counter = K, start = 0;
+        Map<Character, Integer> map = new HashMap<>();
+        for (int end = 0; end < s.length(); ++ end) {
+            char cur = s.charAt(end);
+            map.put(cur, map.getOrDefault(cur, 0) + 1);
+            if (map.get(cur) == 1) counter --;
+            else if (map.get(cur) == 2) counter ++;
+            while (map.size() >= K) {
+                if (counter == 0) res ++;
+                cur = s.charAt(start);
+                map.put(cur, map.get(cur) - 1);
+                if (map.get(cur) == 1) counter --;
+                else if (map.get(cur) == 0) {
+                    map.remove(cur);
+                    counter ++;
+                }
+                start ++;
+            }
+        }
+        return res;
+    }
+}
