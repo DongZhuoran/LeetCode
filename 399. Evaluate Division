@@ -1,0 +1,63 @@
+/**
+ * Equations are given in the format A / B = k, where A and B are variables represented as strings, 
+ * and k is a real number (floating point number). Given some queries, return the answers. If the 
+ * answer does not exist, return -1.0.
+ *
+ * Example:
+ * Given a / b = 2.0, b / c = 3.0.
+ * queries are: a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ? .
+ * return [6.0, 0.5, -1.0, 1.0, -1.0 ].
+ *
+ * The input is: vector<pair<string, string>> equations, vector<double>& values, vector<pair<string, 
+ * string>> queries , where equations.size() == values.size(), and the values are positive. This 
+ * represents the equations. Return vector<double>.
+ *
+ * According to the example above:
+ * equations = [ ["a", "b"], ["b", "c"] ],
+ * values = [2.0, 3.0],
+ * queries = [ ["a", "c"], ["b", "a"], ["a", "e"], ["a", "a"], ["x", "x"] ]. 
+ *
+ *
+ * The input is always valid. You may assume that evaluating the queries will result in no division 
+ * by zero and there is no contradiction. */
+ 
+// Approach #1: dfs.
+class Solution {
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        Map<String, List<String>> pairs = new HashMap<>();
+        Map<String, List<Double>> valuesPair = new HashMap<>();
+        for (int i = 0; i < equations.size(); ++ i) {
+            List<String> e = equations.get(i);
+            if (!pairs.containsKey(e.get(0))) pairs.put(e.get(0), new ArrayList<>());
+            if (!pairs.containsKey(e.get(1))) pairs.put(e.get(1), new ArrayList<>());
+            if (!valuesPair.containsKey(e.get(0))) valuesPair.put(e.get(0), new ArrayList<>());
+            if (!valuesPair.containsKey(e.get(1))) valuesPair.put(e.get(1), new ArrayList<>());
+            pairs.get(e.get(0)).add(e.get(1));
+            pairs.get(e.get(1)).add(e.get(0));
+            valuesPair.get(e.get(0)).add(values[i]);
+            valuesPair.get(e.get(1)).add(1/values[i]);
+        }
+        
+        double[] res = new double[queries.size()];
+        for (int i = 0; i < queries.size(); ++ i) {
+            List<String> q = queries.get(i);
+            res[i] = dfs(q.get(0), q.get(1), pairs, valuesPair, new HashSet<>(), 1.0);
+        }
+        return res;
+    }
+    
+    public double dfs(String start, String end, Map<String, List<String>> pairs, Map<String, List<Double>> values, Set<String> seen, double value) {
+        if (seen.contains(start)) return -1.0;
+        if (!pairs.containsKey(start)) return -1.0;
+        if (start.equals(end)) return value;
+        
+        seen.add(start);
+        double res = -1.0;
+        List<String> neighbors = pairs.get(start);
+        for (int i = 0; i < neighbors.size(); ++ i) {
+            res = dfs(neighbors.get(i), end, pairs, values, seen, value * values.get(start).get(i));
+            if (res != -1) return res;
+        }
+        return res;
+    }
+}
