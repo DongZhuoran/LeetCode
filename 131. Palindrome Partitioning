@@ -1,0 +1,57 @@
+/**
+ * Given a string s, partition s such that every substring of the partition is a palindrome.
+ *
+ * Return all possible palindrome partitioning of s.
+ *
+ * Example:
+ * Input: "aab"
+ * Output:
+ * [
+ *   ["aa","b"],
+ *   ["a","a","b"]
+ * ] */
+ 
+// Approach #1: DP + DFS.
+class Solution {
+    public List<List<String>> partition(String s) {
+        List<List<String>> res = new ArrayList<>();
+        if (s.length() == 0) return res;
+        
+        int N = s.length();
+        boolean[][] dp = new boolean[N][N];
+        findPalindrome(s, dp);
+        System.out.println(Arrays.deepToString(dp));
+        dfs(s, dp, 0, new ArrayList<>(), res);
+        return res;
+    }
+    
+    public void dfs(String s, boolean[][] dp, int start, List<String> cur, List<List<String>> res) {
+        if (start == s.length()) {
+            res.add(new ArrayList<>(cur));
+            return;
+        }
+        for (int i = start; i < s.length(); ++ i) {
+            if (dp[start][i]) {
+                int index = cur.size();
+                cur.add(s.substring(start, i + 1));
+                dfs(s, dp, i + 1, cur, res);
+                cur.remove(index);
+            }
+        }
+    }
+    
+    public void findPalindrome(String s, boolean[][] dp) {
+        int N = s.length();
+        for (int i = N - 1; i >= 0; -- i) {
+            dp[i][i] = true;
+            for (int j = i + 1; j < N; ++ j) {
+                if (s.charAt(i) == s.charAt(j)) {
+                    if (j == i + 1)
+                        dp[i][j] = true;
+                    else 
+                        dp[i][j] = dp[i + 1][j - 1];
+                }
+            }
+        }
+    }
+}
