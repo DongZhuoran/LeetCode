@@ -1,0 +1,32 @@
+/**
+ * Given a string s, partition s such that every substring of the partition is a palindrome.
+ *
+ * Return the minimum cuts needed for a palindrome partitioning of s.
+ *
+ * Example:
+ * Input: "aab"
+ * Output: 1
+ * Explanation: The palindrome partitioning ["aa","b"] could be produced using 1 cut. */
+ 
+// Approach #1: DP.
+// Time - O(n^2)
+// Space - O(n^2)
+class Solution {
+    public int minCut(String s) {
+        if (s.length() == 0) return 0;
+        
+        int N = s.length();
+        boolean[][] isPalindrome = new boolean[N][N];
+        int[] count = new int[N];
+        for (int i = 0; i < N; ++ i) {
+            count[i] = i;
+            for (int j = 0; j <= i; ++ j) {
+                if (s.charAt(j) == s.charAt(i) && (j + 1 > i - 1 || isPalindrome[j + 1][i - 1])) {
+                    isPalindrome[j][i] = true;
+                    count[i] = Math.min(count[i], j == 0 ? 0 : (count[j - 1] + 1));
+                }
+            }
+        }
+        return count[N - 1];
+    }
+}
