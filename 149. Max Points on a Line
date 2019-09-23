@@ -1,0 +1,75 @@
+/**
+ * Given n points on a 2D plane, find the maximum number of points that lie on the same 
+ * straight line.
+ *
+ * Example 1:
+ * Input: [[1,1],[2,2],[3,3]]
+ * Output: 3
+ * Explanation:
+ * ^
+ * |
+ * |        o
+ * |     o
+ * |  o  
+ * +------------->
+ * 0  1  2  3  4
+ * 
+ * Example 2:
+ * Input: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+ * Output: 4
+ * Explanation:
+ * ^
+ * |
+ * |  o
+ * |     o        o
+ * |        o
+ * |  o        o
+ * +------------------->
+ * 0  1  2  3  4  5  6
+ * 
+ * NOTE: input types have been changed on April 15, 2019. Please reset to default code 
+ * definition to get new method signature. */
+ 
+// Approach #1: HashMap. Time->O(n^2). Space->O(n).
+class Solution {
+    public int maxPoints(int[][] points) {
+        int N = points.length;
+        Map<String, Integer> count = new HashMap<>();
+        int res = 0;
+        for (int i = 0; i < N; ++ i) {
+            count.clear();
+            int samePoints = 1;
+            int maxPoints = 0;
+            int[] p1 = points[i];
+            for (int j = i + 1; j < N; ++ j) {
+                int[] p2 = points[j];
+                if (p1[0] == p2[0] && p1[1] == p2[1]) {
+                    samePoints ++;
+                } else {
+                    String s = slope(p1, p2);
+                    count.put(s, count.getOrDefault(s, 0) + 1);
+                    maxPoints = Math.max(maxPoints, count.get(s));
+                }
+            }
+            res = Math.max(res, maxPoints + samePoints);
+        }
+        return res;
+    }
+    
+    public String slope(int[] p1, int[] p2) {
+        int x = p1[0] - p2[0];
+        int y = p1[1] - p2[1];
+        if (x == 0) {
+            return "0/" + x;
+        }
+        if (y == 0) {
+            return y + "/0";
+        }
+        int d = gcd(x, y);
+        return (y/d) + "/" + (x/d);
+    }
+    
+    public int gcd(int m, int n) {
+        return n == 0 ? m : gcd(n, m % n);
+    }
+}
