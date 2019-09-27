@@ -45,21 +45,16 @@ class Solution {
 // http://bookshadow.com/weblog/2015/09/28/leetcode-find-duplicate-number/
 class Solution {
     public int findDuplicate(int[] nums) {
-        int slow = 0, fast = 0, finder = 0;
-        while (true) {
+        int slow = 0, fast = 0;
+        do {
             slow = nums[slow];
             fast = nums[nums[fast]];
-            if (slow == fast) {
-                break;
-            }
-        }
-        while (true) {
+        } while (slow != fast);
+        int slow2 = 0;
+        while (slow2 != slow) {
             slow = nums[slow];
-            finder = nums[finder];
-            if (slow == finder) {
-                break;
-            }
+            slow2 = nums[slow2];
         }
-        return slow;
+        return slow2;
     }
 }
