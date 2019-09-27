@@ -56,3 +56,55 @@ class Solution {
         return arr;
     }
 }
+
+
+// Approach #2; Fenwick Tree. Time: O(nlogn).
+// Explanation: https://zxi.mytechroad.com/blog/algorithms/array/leetcode-315-count-of-smaller-numbers-after-self/
+class Solution {
+    class FenwickTree {
+        public int lowbit(int x) { return x & (-x); }
+        
+        private int[] sums;
+        
+        public FenwickTree(int n) {
+            sums = new int[n + 1];
+        }
+        
+        public void update(int i, int x) {
+            while (i < sums.length) {
+                sums[i] += x;
+                i += lowbit(i);
+            }
+        }
+        
+        public int query(int i) {
+            int sum = 0;
+            while (i > 0) {
+                sum += sums[i];
+                i -= lowbit(i);
+            }
+            return sum;
+        }
+    }
+    
+    public List<Integer> countSmaller(int[] nums) {
+        int[] sorted = Arrays.copyOf(nums, nums.length);
+        Arrays.sort(sorted);
+        Map<Integer, Integer> ranks = new HashMap<>();
+        int rank = 0;
+        for (int i = 0; i < sorted.length; ++ i) {
+            if (i == 0 || sorted[i] != sorted[i - 1])
+                ranks.put(sorted[i], ++ rank);
+        }
+        
+        List<Integer> res = new ArrayList<>();
+        FenwickTree ft = new FenwickTree(nums.length);
+        for (int i = nums.length - 1; i >= 0; -- i) {
+            int sum = ft.query(ranks.get(nums[i]) - 1);
+            res.add(sum);
+            ft.update(ranks.get(nums[i]), 1);
+        }
+        Collections.reverse(res);
+        return res;
+    }
+}
