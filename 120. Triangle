@@ -1,0 +1,93 @@
+/**
+ * Given a triangle, find the minimum path sum from top to bottom. Each step you may move to 
+ * adjacent numbers on the row below.
+ *
+ * For example, given the following triangle
+ * [
+ *      [2],
+ *     [3,4],
+ *    [6,5,7],
+ *   [4,1,8,3]
+ * ]
+ * The minimum path sum from top to bottom is 11 (i.e., 2 + 3 + 5 + 1 = 11).
+ *
+ * Note:
+ * Bonus point if you are able to do this using only O(n) extra space, where n is the total number
+ * of rows in the triangle. */
+ 
+// Approach #1: 2D top-bottom DP.
+class Solution {
+    public int minimumTotal(List<List<Integer>> triangle) {
+        if (triangle.size() == 0) return 0;
+        
+        List<List<Integer>> dp = new ArrayList<>();
+        for (int i = 0; i < triangle.size(); ++ i) {
+            List<Integer> list = new ArrayList<>();
+            if (i > 0) 
+                list.add(triangle.get(i).get(0) + dp.get(i - 1).get(0));
+            else
+                list.add(triangle.get(i).get(0));
+            dp.add(list);
+        }
+        
+        for (int i = 1; i < triangle.size(); ++ i) {
+            for (int j = 1; j < triangle.get(i).size(); ++ j) {
+                int cur = triangle.get(i).get(j);
+                if (j == triangle.get(i).size() - 1)
+                    dp.get(i).add(cur + dp.get(i - 1).get(j - 1));
+                else
+                    dp.get(i).add(cur + Math.min(dp.get(i - 1).get(j - 1), dp.get(i - 1).get(j)));
+            }
+        }
+        
+        int min = Integer.MAX_VALUE;
+        for (int i: dp.get(dp.size() - 1)) 
+            min = Math.min(min, i);
+        return min;
+    }
+}
+
+// Approach #2: 1D top-bottom DP.
+class Solution {
+    public int minimumTotal(List<List<Integer>> triangle) {
+        if (triangle.size() == 0) return 0;
+        
+        List<Integer> dp = new ArrayList<>();
+        dp.add(triangle.get(0).get(0));
+        
+        for (int i = 1; i < triangle.size(); ++ i) {
+            for (int j = triangle.get(i).size() - 1; j >= 0; -- j) {
+                int cur = triangle.get(i).get(j);
+                if (j == triangle.get(i).size() - 1)
+                    dp.add(cur + dp.get(j - 1));
+                else if (j == 0) 
+                    dp.set(j, cur + dp.get(j));
+                else
+                    dp.set(j, cur + Math.min(dp.get(j - 1), dp.get(j)));
+            }
+        }
+        
+        int min = Integer.MAX_VALUE;
+        for (int i: dp) 
+            min = Math.min(min, i);
+        return min;
+    }
+}
+
+// Approach #3: 1D bottom-up DP.
+class Solution {
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int N = triangle.get(triangle.size() - 1).size();
+        int[] dp = new int[N];
+        for (int i = 0; i < N; ++ i) {
+            dp[i] = triangle.get(N - 1).get(i);
+        }
+        
+        for (int i = N - 2; i >= 0; -- i) {
+            for (int j = 0; j < i + 1; ++ j) {
+                dp[j] = triangle.get(i).get(j) + Math.min(dp[j], dp[j + 1]);
+            }
+        }
+        return dp[0];
+    }
+}
