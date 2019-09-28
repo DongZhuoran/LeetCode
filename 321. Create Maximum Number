@@ -1,0 +1,83 @@
+/** 
+ * Given two arrays of length m and n with digits 0-9 representing two numbers. Create the maximum 
+ * number of length k <= m + n from digits of the two. The relative order of the digits from the 
+ * same array must be preserved. Return an array of the k digits.
+ *
+ * Note: You should try to optimize your time and space complexity.
+ *
+ * Example 1:
+ * Input:
+ * nums1 = [3, 4, 6, 5]
+ * nums2 = [9, 1, 2, 5, 8, 3]
+ * k = 5
+ * Output:
+ * [9, 8, 6, 5, 3]
+ * 
+ * Example 2:
+ * Input:
+ * nums1 = [6, 7]
+ * nums2 = [6, 0, 4]
+ * k = 5
+ * Output:
+ * [6, 7, 6, 0, 4]
+ * 
+ * Example 3:
+ * Input:
+ * nums1 = [3, 9]
+ * nums2 = [8, 9]
+ * k = 3
+ * Output:
+ * [9, 8, 9]
+ */
+ 
+// Approach #1: Greedy + DP. Time: O((m + n)^3)
+class Solution {
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+        int l1 = nums1.length, l2 = nums2.length;
+        int[] res = new int[k];
+        for (int i = Math.max(0, k - l2); i <= Math.min(k, l1); ++ i) {
+            int[] arr = merge(findMax(nums1, i), findMax(nums2, k - i), k);
+            res = arrMax(res, arr);
+        }
+        return res;
+    }
+    
+    public int[] findMax(int[] nums, int k) {
+        int[] res = new int[k];
+        int j = 0;
+        for (int i = 0; i < nums.length; ++ i) {
+            while (j > 0 && res[j - 1] < nums[i] && nums.length - i > k - j)
+                j --;
+            if (j < k)
+                res[j ++] = nums[i];
+        }
+        return res;
+    }
+    
+    private int[] merge(int[] nums1, int[] nums2, int k) {
+        int[] ans = new int[k];
+        for (int i = 0, j = 0, r = 0; r < k; ++r)
+            ans[r] = greater(nums1, i, nums2, j) ? nums1[i++] : nums2[j++];
+        return ans;
+    }
+    
+    public boolean greater(int[] nums1, int i, int[] nums2, int j) {
+        while (i < nums1.length && j < nums2.length && nums1[i] == nums2[j]) {
+            i++;
+            j++;
+        }
+        return j == nums2.length || (i < nums1.length && nums1[i] > nums2[j]);
+    }
+    
+    public int[] arrMax(int[] nums1, int[] nums2) {
+        int i = 0, j = 0;
+        while (i < nums1.length && j < nums2.length && nums1[i] == nums2[j]) {
+            i ++;
+            j ++;
+        }
+        if (i == nums1.length || nums1[i] > nums2[j])
+            return nums1;
+        else
+            return nums2;
+    }
+}
