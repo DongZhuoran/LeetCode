@@ -19,29 +19,12 @@
  */
  
  class Solution {
-    public int strStr(String haystack, String needle) {
-        if (needle.length() == 0) return 0;
-        if (haystack.length() == 0) return -1;
-        
-        int index = -1;
-        for (int i = 0; i < haystack.length(); ++i) {
-            if (haystack.charAt(i) == needle.charAt(0)) {
-                index = i;
-                int tempIndex = i;
-                for (int j = 1; j < needle.length(); ++j) {
-                    i++;
-                    if (i >= haystack.length() || haystack.charAt(i) != needle.charAt(j)) {
-                        index = -1;
-                        break;
-                    }
-                }
-                if (index != -1) {
-                    return index;
-                } else {
-                    i = tempIndex;
-                }
-            }
+    public static int strStr(String haystack, String needle) {
+        if (needle.isEmpty()) return 0; // edge case: "",""=>0  "a",""=>0
+        for (int i = 0; i <= haystack.length() - needle.length(); i++) {
+            for (int j = 0; j < needle.length() && haystack.charAt(i + j) == needle.charAt(j); j++)
+                if (j == needle.length() - 1) return i;
         }
-        return index;
+        return -1;
     }
 }
