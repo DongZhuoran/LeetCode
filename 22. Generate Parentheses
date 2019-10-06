@@ -26,14 +26,15 @@ class Solution {
             res.add(cur.toString());
             return;
         }
-        for (int i = op; i < n; ++ i) {
+        if (op < n) {
             cur.append('(');
-            StringBuilder temp = new StringBuilder(cur);
-            for (int j = cp; j <= i; ++ j) {
-                cur.append(')');
-                backtracking(res, new StringBuilder(cur), i + 1, j + 1, n);
-            }
-            cur = temp;
+            backtracking(res, cur, op + 1, cp, n);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+        if (cp < n && op > cp) {
+            cur.append(')');
+            backtracking(res, cur, op, cp + 1, n);
+            cur.deleteCharAt(cur.length() - 1);
         }
     }
 }
