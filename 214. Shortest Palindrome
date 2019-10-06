@@ -1,0 +1,43 @@
+/**
+ * Given a string s, you are allowed to convert it to a palindrome by adding characters in front of it. 
+ * Find and return the shortest palindrome you can find by performing this transformation.
+ *
+ * Example 1:
+ * Input: "aacecaaa"
+ * Output: "aaacecaaa"
+ * 
+ * Example 2:
+ * Input: "abcd"
+ * Output: "dcbabcd"
+ */
+ 
+// Approach #1: KMP. Time O(N).
+// Explanation: 
+// KMP: https://www.cnblogs.com/grandyang/p/6992403.html
+// Solution: https://www.youtube.com/watch?v=c4akpqTwE5g
+// Time complexity: https://leetcode.com/problems/shortest-palindrome/solution/
+class Solution {
+    public String shortestPalindrome(String s) {
+        String rev_s = new StringBuilder(s).reverse().toString();
+        // Use special character to avoid overlap
+        String t = s + "#" + rev_s;
+        
+        // Build KMP table
+        // i -> suffix boundary
+        // j -> prefix boundary
+        int[] next = new int[t.length()];
+        for (int i = 1; i < t.length(); ++ i) {
+            // Update prefix boundary
+            int j = next[i - 1];
+            
+            // Move to the last prefix boundary that matches
+            while (j > 0 && t.charAt(i) != t.charAt(j))
+                j = next[j - 1];
+            
+            // If prefix boundary matches suffix boundary, increase prefix length
+            if (t.charAt(i) == t.charAt(j))
+                next[i] = j + 1;
+        }
+        return rev_s.substring(0, rev_s.length() - next[next.length - 1]) + s;
+    }
+}
