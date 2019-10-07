@@ -1,0 +1,50 @@
+/**
+ * Design a class which receives a list of words in the constructor, and implements a method that
+ * takes two words word1 and word2 and return the shortest distance between these two words in the
+ * list. Your method will be called repeatedly many times with different parameters.
+ *
+ * Example:
+ * Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+ * Input: word1 = “coding”, word2 = “practice”
+ * Output: 3
+ * Input: word1 = "makes", word2 = "coding"
+ * Output: 1
+ *
+ * Note:
+ * You may assume that word1 does not equal to word2, and word1 and word2 are both in the list.
+ */
+
+// Approach #1: HashMap. Time O(N) Space O(N)
+class WordDistance {
+    Map<String, List<Integer>> dict;
+
+    public WordDistance(String[] words) {
+        dict = new HashMap<>();
+        for (int i = 0; i < words.length; ++ i) {
+            if (!dict.containsKey(words[i])) dict.put(words[i], new ArrayList<>());
+            dict.get(words[i]).add(i);
+        }
+    }
+
+    public int shortest(String word1, String word2) {
+        List<Integer> indexes1 = dict.get(word1);
+        List<Integer> indexes2 = dict.get(word2);
+        int i = 0, j = 0;
+        int minDist = Integer.MAX_VALUE;
+        while (i < indexes1.size() && j < indexes2.size()) {
+            int x = indexes1.get(i), y = indexes2.get(j);
+            minDist = Math.min(minDist, Math.abs(x - y));
+            if (x < y)
+                i ++;
+            else
+                j ++;
+        }
+        return minDist;
+    }
+}
+
+/**
+ * Your WordDistance object will be instantiated and called as such:
+ * WordDistance obj = new WordDistance(words);
+ * int param_1 = obj.shortest(word1,word2);
+ */
