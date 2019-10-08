@@ -14,7 +14,7 @@ class Solution {
         Stack<Integer> stack = new Stack<>();
         int min = Integer.MIN_VALUE;
         for (int n: preorder) {
-            if (n > min) return false;
+            if (n < min) return false;
             
             while(!stack.empty() && n > stack.peek()) {
                 min = stack.pop();
