@@ -1,0 +1,91 @@
+/**
+ * There is a new alien language which uses the latin alphabet. However, the order among letters are
+ * unknown to you. You receive a list of non-empty words from the dictionary, where words are sorted
+ * lexicographically by the rules of this new language. Derive the order of letters in this language.
+ *
+ * Example 1:
+ * Input:
+ * [
+ *   "wrt",
+ *   "wrf",
+ *   "er",
+ *   "ett",
+ *   "rftt"
+ * ]
+ * Output: "wertf
+ *
+ * Example 2:
+ * Input:
+ * [
+ *   "z",
+ *   "x"
+ * ]
+ * Output: "zx"
+ *
+ * Example 3:
+ * Input:
+ * [
+ *   "z",
+ *   "x",
+ *   "z"
+ * ]
+ * Output: ""
+ * Explanation: The order is invalid, so return "".
+ *
+ * Note:
+ * You may assume all letters are in lowercase.
+ * You may assume that if a is a prefix of b, then a must appear before b in the given dictionary.
+ * If the order is invalid, return an empty string.
+ * There may be multiple valid order of letters, return any one of them is fine.
+ */
+
+// Approach #1: Topological sort. Time O(N), N is total # of characters in the words.
+class Solution {
+    public String alienOrder(String[] words) {
+        if (words == null || words.length == 0) return "";
+
+        Map<Character, Set<Character>> map = new HashMap<>();
+        Map<Character, Integer> degree = new HashMap<>();
+        for (String w: words) {
+            for (char c : w.toCharArray()) {
+                degree.put(c, 0);
+            }
+        }
+
+        for (int i = 0; i < words.length - 1; ++ i) {
+            String cur = words[i];
+            String next = words[i + 1];
+            for (int j = 0; j < Math.min(cur.length(), next.length()); ++ j) {
+                char c1 = cur.charAt(j), c2 = next.charAt(j);
+                if (c1 != c2) {
+                    Set<Character> sub = map.getOrDefault(c1, new HashSet<>());
+                    if (!sub.contains(c2)) {
+                        sub.add(c2);
+                        map.put(c1, sub);
+                        degree.put(c2, degree.get(c2) + 1);
+                    }
+                    break;
+                }
+            }
+        }
+
+        StringBuilder res = new StringBuilder();
+        Queue<Character> queue = new LinkedList<>();
+        for (char c: degree.keySet()) {
+            if (degree.get(c) == 0)
+                queue.add(c);
+        }
+        while (!queue.isEmpty()) {
+            char c = queue.poll();
+            res.append(c);
+            if (map.containsKey(c)) {
+                for (char ch : map.get(c)) {
+                    degree.put(ch, degree.get(ch) - 1);
+                    if (degree.get(ch) == 0)
+                        queue.add(ch);
+                }
+            }
+        }
+        return res.length() == degree.size() ? res.toString() : "";
+    }
+}
