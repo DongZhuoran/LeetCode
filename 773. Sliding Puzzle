@@ -39,57 +39,40 @@
  
 // Approach #1: BFS.
 class Solution {
-    int[] dx = {1, -1, 0, 0};
-    int[] dy = {0, 0, 1, -1};
-    
     public int slidingPuzzle(int[][] board) {
+        String target = "123450";
+        String cur = "";
+        for (int i = 0; i < board.length; ++ i)
+            for (int j = 0; j < board[0].length; ++ j)
+                cur += board[i][j];
+        
+        int[][] dirs = new int[][] { { 1, 3 }, { 0, 2, 4 },
+                { 1, 5 }, { 0, 4 }, { 1, 3, 5 }, { 2, 4 } };
+        
         Map<String, Integer> cache = new HashMap<>();
-        Queue<int[][]> queue = new LinkedList<>();
-        cache.put(Arrays.deepToString(board), 0);
-        queue.offer(board);
+        Queue<String> queue = new LinkedList<>();
+        cache.put(cur, 0);
+        queue.offer(cur);
         while (!queue.isEmpty()) {
-            int[][] cur = queue.poll();
-            int prev = cache.get(Arrays.deepToString(cur));
-            if (check(cur)) return prev;
-            for (int i = 0; i < 2; ++ i) {
-                for (int j = 0; j < 3; ++ j) {
-                    if (cur[i][j] == 0) continue;
-                    for (int k = 0; k < 4; ++ k) {
-                        if (i + dx[k] >= 0 && i + dx[k] < 2 
-                            && j + dy[k] >= 0 && j + dy[k] < 3
-                            && cur[i + dx[k]][j + dy[k]] == 0) {
-                            int[][] tmp = deepCopy(cur);
-                            tmp[i + dx[k]][j + dy[k]] = cur[i][j];
-                            tmp[i][j] = 0;
-                            if (!cache.containsKey(Arrays.deepToString(tmp))) {
-                                cache.put(Arrays.deepToString(tmp), prev + 1);
-                                queue.offer(tmp);
-                            }
-                        }
-                    }
+            cur = queue.poll();
+            int prev = cache.get(cur);
+            if (target.equals(cur)) return prev;
+            int index = cur.indexOf('0');
+            for (int dir: dirs[index]) {
+                String next = swap(cur, index, dir);
+                if (!cache.containsKey(next)) {
+                    cache.put(next, prev + 1);
+                    queue.add(next);
                 }
             }
         }
         return -1;
     }
     
-    private int[][] deepCopy(int[][] source) {
-        int m = source.length, n = source[0].length;
-        int[][] dest = new int[m][n];
-        for (int i = 0; i < m; ++ i) {
-            for (int j = 0; j < n; ++ j) {
-                dest[i][j] = source[i][j];
-            }
-        }
-        return dest;
-    }
-    
-    private boolean check(int[][] board) {
-        for (int i = 0; i < 2; ++ i) {
-            for (int j = 0; j < 3; ++ j) {
-                if (board[i][j] != (i * 3 + j + 1) % 6) return false;
-            }
-        }
-        return true;
+    private String swap(String str, int i, int j) {
+        StringBuilder sb = new StringBuilder(str);
+        sb.setCharAt(i, str.charAt(j));
+        sb.setCharAt(j, str.charAt(i));
+        return sb.toString();
     }
 }
