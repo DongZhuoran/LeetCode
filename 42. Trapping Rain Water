@@ -12,7 +12,7 @@
  * More approaches see https://leetcode.com/articles/trapping-rain-water/
  */
  
-// Monotonic stack. Time complexity: O(n).
+// Approach #1: Two monotonic stack. Time complexity: O(n).
 class Solution {
     public int trap(int[] height) {
         if (height.length == 0) return 0;
@@ -57,5 +57,50 @@ class Solution {
         }
         
         return trap;
+    }
+}
+
+
+// Approach #2: One stack.
+class Solution {
+    public int trap(int[] height) {
+        int res = 0;
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0 ; i < height.length; ++ i) {
+            while (!stack.empty() && height[i] > height[stack.peek()]) {
+                int top = stack.pop();
+                if (stack.empty()) break;
+                int distance = i - stack.peek() - 1;
+                int bound_height = Math.min(height[i], height[stack.peek()]) - height[top];
+                res += distance * bound_height;
+            }
+            stack.push(i);
+        }
+        return res;
+    }
+}
+
+// Approach #3: Two pointers. One pass.
+class Solution {
+    public int trap(int[] height) {
+        int res = 0;
+        int left = 0, right = height.length - 1;
+        int leftMax = 0, rightMax = 0;
+        while (left < right) {
+            if (height[left] < height[right]) {
+                if (height[left] >= leftMax)
+                    leftMax = height[left];
+                else 
+                    res += leftMax - height[left];
+                left ++;
+            } else {
+                if (height[right] >= rightMax)
+                    rightMax = height[right];
+                else
+                    res += rightMax - height[right];
+                right --;
+            }
+        }
+        return res;
     }
 }
