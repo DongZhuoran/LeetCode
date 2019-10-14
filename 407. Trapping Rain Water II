@@ -1,0 +1,77 @@
+/**
+ * Given an m x n matrix of positive integers representing the height of each unit cell in a 2D elevation 
+ * map, compute the volume of water it is able to trap after raining.
+ *
+ * Note:
+ * Both m and n are less than 110. The height of each unit cell is greater than 0 and is less than 20,000.
+ *
+ * Example:
+ * Given the following 3x6 height map:
+ * [
+ *   [1,4,3,1,3,2],
+ *   [3,2,1,3,2,4],
+ *   [2,3,3,2,3,1]
+ * ]
+ * Return 4.
+ */
+ 
+// Approach #1: PriorityQueue. Time O(MNlog(MN)).
+class Solution {
+    int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    public int trapRainWater(int[][] heightMap) {
+        if (heightMap == null || heightMap.length == 0) return 0;
+        
+        int res = 0;
+        int max = 0;
+        int m = heightMap.length, n = heightMap[0].length;
+        PriorityQueue<Point> pq = new PriorityQueue<>((a, b) -> (a.val - b.val));
+        int[][] visited = new int[m][n];
+        
+        // Add outer layer of nodes.
+        for (int i = 0; i < m; ++ i) {
+            visited[i][0] = 1;
+            visited[i][n - 1] = 1;
+            pq.add(new Point(i, 0, heightMap[i][0]));
+            pq.add(new Point(i, n - 1, heightMap[i][n - 1]));
+        }
+        for (int j = 1; j < n - 1; ++ j) {
+            visited[0][j] = 1;
+            visited[m - 1][j] = 1;
+            pq.add(new Point(0, j, heightMap[0][j]));
+            pq.add(new Point(m - 1, j, heightMap[m - 1][j]));
+        }
+        
+        while (!pq.isEmpty()) {
+            Point cur = pq.poll();
+            max = Math.max(max, cur.val);
+            visited[cur.x][cur.y] = 1;
+            res += expand(heightMap, cur.x, cur.y, max, pq, visited);
+        }
+        return res;
+    }
+    
+    public int expand(int[][] heightMap, int x, int y, int max, PriorityQueue<Point> pq, int[][] visited) {
+        int water = 0;
+        for (int[] dir: dirs) {
+            int nx = x + dir[0], ny = y + dir[1];
+            if (nx >= 0 && nx < heightMap.length && ny >= 0 && ny < heightMap[0].length 
+                && visited[nx][ny] == 0) {
+                visited[nx][ny] = 1;
+                pq.add(new Point(nx, ny, heightMap[nx][ny]));
+                if (max > heightMap[nx][ny])
+                    water += max - heightMap[nx][ny];
+            }
+        }
+        return water;
+    }
+    
+    class Point{
+        int x, y;
+        int val;
+        public Point(int x, int y, int val) {
+            this.x = x;
+            this.y = y;
+            this.val = val;
+        }
+    }
+}
