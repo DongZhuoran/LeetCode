@@ -25,20 +25,46 @@
  * cache.get(4);       // returns 4
  */
  
+// Approach #1: LinkedHashMap
+class LRUCache extends LinkedHashMap<Integer, Integer> {
+    int capacity;
+
+    public LRUCache(int capacity) {
+        super(capacity, 0.75F, true);
+        this.capacity = capacity;
+    }
+    
+    public int get(int key) {
+        return super.getOrDefault(key, -1);
+    }
+    
+    public void put(int key, int value) {
+        super.put(key, value);
+    }
+    
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<Integer, Integer> eldest) {
+        return size() > capacity;
+    }
+}
+
+// Approach #2: HashMap + DoublyLinkedList
 class LRUCache {
-    private Map<Integer, Node> map;
-    private Node head, tail;
     private int capacity;
+    
+    private Node head, tail;
+    
+    private Map<Integer, Node> map;
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
-        this.map = new HashMap<>();
+        map = new HashMap<>();
     }
     
     public int get(int key) {
         if (map.containsKey(key)) {
             Node cur = map.get(key);
-            this.moveToHead(cur);
+            moveToHead(cur);
             return cur.val;
         } else {
             return -1;
@@ -46,32 +72,33 @@ class LRUCache {
     }
     
     public void put(int key, int value) {
+        Node cur;
         if (map.containsKey(key)) {
-            Node cur = map.get(key);
+            cur = map.get(key);
             cur.val = value;
-            moveToHead(cur);
         } else {
-            Node newNode = new Node(key, value);
+            cur = new Node(key, value);
             if (map.size() == capacity) {
                 map.remove(tail.key);
                 tail = tail.prev;
                 if (tail != null) tail.next = null;
+                else head = null;
             }
-            map.put(key, newNode);
-            moveToHead(newNode);
+            map.put(key, cur);
         }
+        moveToHead(cur);
     }
     
-    public void moveToHead(Node node) {
+    private void moveToHead(Node node) {
         if (head == null) {
             head = tail = node;
         } else if (head != node) {
-            if (tail != node && node.prev != null) {
+            if (node != tail && node.prev != null) {
                 node.prev.next = node.next;
                 node.next.prev = node.prev;
-            } else if (node.prev != null ){
-                tail = node.prev;
-                node.prev.next = null;
+            } else if (node.prev != null) {
+                tail = tail.prev;
+                tail.next = null;
             }
             head.prev = node;
             node.next = head;
@@ -84,9 +111,9 @@ class LRUCache {
         int key;
         int val;
         Node prev, next;
-        public Node(int key, int val) {
-            this.key = key;
-            this.val = val;
+        public Node(int k, int v) {
+            key = k;
+            val = v;
         }
     }
 }
