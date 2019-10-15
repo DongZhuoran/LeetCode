@@ -65,7 +65,7 @@ public class Solution {
 - <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/424.%20Longest%20Repeating%20Character%20Replacement.md'>424. Longest Repeating Character Replacement</a>
 - <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/438.%20Find%20All%20Anagrams%20in%20a%20String.md'>438. Find All Anagrams in a String</a>
 
-## I will give my solution for these questions use the above template one by one
+## I will give my solution for these questions use the above template one by one [Legacy..wait for update]
 
 <a href='https://leetcode.com/problems/minimum-window-substring/'>Minimum-window-substring</a>
 ```
