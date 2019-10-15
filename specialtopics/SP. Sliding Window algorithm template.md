@@ -1,4 +1,4 @@
-# Special Topic: Sliding Window algorithm template to solve all the Leetcode substring search problem
+# Special Topic: Sliding Window
 
 Among all leetcode questions, I find that there are at least 5 substring search problem which could be solved by the 
 sliding window algorithm. So I sum up the algorithm template here. Wish it will help you!
@@ -62,6 +62,7 @@ public class Solution {
 - <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/76.%20Minimum%20Window%20Substring.md'>76. Minimum Window Substring</a>
 - https://leetcode.com/problems/substring-with-concatenation-of-all-words/
 - <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/159.%20Longest%20Substring%20with%20At%20Most%20Two%20Distinct%20Characters.md'>159. Longest Substring with At Most Two Distinct Characters</a>
+- <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/424.%20Longest%20Repeating%20Character%20Replacement.md'>424. Longest Repeating Character Replacement</a>
 - <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/438.%20Find%20All%20Anagrams%20in%20a%20String.md'>438. Find All Anagrams in a String</a>
 
 ## I will give my solution for these questions use the above template one by one
