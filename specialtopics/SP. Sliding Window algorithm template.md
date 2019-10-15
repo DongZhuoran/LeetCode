@@ -58,11 +58,11 @@ public class Solution {
 ```
 
 ## The similar questions are:
-- https://leetcode.com/problems/minimum-window-substring/
-- https://leetcode.com/problems/longest-substring-without-repeating-characters/
+- <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/3.%20Longest%20Substring%20Without%20Repeating%20Characters.md'>3. Longest Substring Without Repeating Characters</a>
+- <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/76.%20Minimum%20Window%20Substring.md'>76. Minimum Window Substring</a>
 - https://leetcode.com/problems/substring-with-concatenation-of-all-words/
-- https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/
-- https://leetcode.com/problems/find-all-anagrams-in-a-string/
+- <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/159.%20Longest%20Substring%20with%20At%20Most%20Two%20Distinct%20Characters.md'>159. Longest Substring with At Most Two Distinct Characters</a>
+- <a href='https://github.com/DongZhuoran/LeetCode/blob/master/problems/438.%20Find%20All%20Anagrams%20in%20a%20String.md'>438. Find All Anagrams in a String</a>
 
 ## I will give my solution for these questions use the above template one by one
 
