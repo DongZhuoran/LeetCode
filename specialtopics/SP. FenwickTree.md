@@ -1,4 +1,4 @@
-# Special Topic: Fenwick Tree
+# Special Topic: Fenwick Tree/Binary Indexed Tree
 
 ## Code Template
 ```
